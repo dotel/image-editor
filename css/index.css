@@ -1,0 +1,121 @@
+body {
+  background-color: #1e1f22;
+}
+.canvas-wrapper {
+  float: right;
+  width: calc(100% - 300px);
+  height: 100%;
+  position: relative;
+  background-color: #f0f1f2;
+}
+
+canvas{
+  /* background: red; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 650px;
+  height: 400px;
+  transform: translateX(-50%) translateY(-50%);
+}
+.layer{
+  width: 650px;
+  height: 400px;
+}
+
+.top-bar {
+  height: 65px;
+  color: #f0f1f2;
+  background-color: #1e1f22;
+}
+.main-wrapper {
+  margin: 20px 20px 0 20px;
+}
+.main-app {
+  position: relative;
+  width: 100%;
+  content: "";
+  display: table;
+  clear: both;
+  height: calc(100vh - 65px - 20px);
+}
+
+.main-app .control {
+  float: left;
+  width: 300px;
+  height: 100%;
+}
+
+.main-app .control .left {
+  width: 20%;
+  float: left;
+  color: #f0f1f2;
+  background-color: #1e1f22;
+  height: 100%;
+}
+
+.main-app .control .right {
+  height: 200px;
+  width: 80%;
+  float: right;
+  color: #f0f1f2;
+  height: 100%;
+  background-color: #2b2c2f;
+}
+
+.top-bar .logo {
+  float: left;
+}
+.top-bar ul {
+  float: right;
+}
+
+.top-bar .account {
+  float: right;
+}
+.top-bar ul li {
+  list-style: none;
+  float: left;
+  /* padding-left: 40px; */
+}
+
+[data-tab-content] {
+  display: none;
+}
+
+.active[data-tab-content] {
+  display: block;
+}
+
+.tabs {
+  justify-content: space-around;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tab {
+  cursor: pointer;
+  padding: 10px 0;
+}
+
+.white-btn{
+    color: black;
+    padding: 10px 40px;
+    /* padding-top: 20px; */
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+}
+.white-btn:first-child{
+  margin-right: 10px;
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+
+.hidden{
+    display: none;
+}

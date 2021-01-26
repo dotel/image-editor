@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+
+    <title>Image editor</title>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="top-bar">
+        <div class="logo">Logo</div>
+        <ul>
+          <li class="white-btn">
+            <label for="file-selector" class="cursor-pointer" >Load</label>
+            <input
+              type="file"
+              id="file-selector"
+              class="hidden"
+              accept=".jpg, .jpeg, .png"
+            />
+          </li>
+          <li class="white-btn" id = "downloadBtn">Download</li>
+        </ul>
+      </div>
+      <div class="main-app">
+        <div class="control">
+          <div class="left">
+            <ul class="tabs">
+                <li data-tab-target="#frames" class="tab">Undo</li>
+                <li data-tab-target="#frames" class="tab">Redo</li>
+                <li data-tab-target="#delete" class="active tab">Delete</li>
+                <li data-tab-target="#frames" class="tab">Reset</li>
+              <li data-tab-target="#crop" class="tab">Crop</li>
+              <li data-tab-target="#rotate" class="tab">Rotate</li>
+              <li data-tab-target="#flip" class="tab">Flip</li>
+              <li data-tab-target="#draw" class="tab">Draw</li>
+              <li data-tab-target="#shape" class="tab">Shape</li>
+              <li data-tab-target="#text" class="tab">Text</li>
+              <li data-tab-target="#mask" class="tab">Mask</li>
+              <li data-tab-target="#frames" class="tab">Frames</li>
+            </ul>
+          </div>
+          <div class="right">
+            <div class="tab-content">
+              <div id="delete" data-tab-content class="active">
+                <h1>Delete tab</h1>
+                <p>This is delete tab</p>
+              </div>
+              <div id="crop" data-tab-content>
+                <h1>crop tab</h1>
+                <p>This is crop tab</p>
+              </div>
+              <div id="rotate" data-tab-content>
+                <h1>rotate tab</h1>
+                <p>This is rotate tab</p>
+              </div>
+              <div id="flip" data-tab-content>
+                <h1>flip tab</h1>
+                <p>This is flip tab</p>
+              </div>
+              <div id="draw" data-tab-content>
+                <h1>draw tab</h1>
+                <p>This is draw tab</p>
+              </div>
+              <div id="shape" data-tab-content>
+                <h1>shape tab</h1>
+                <p>This is shape tab</p>
+              </div>
+              <div id="text" data-tab-content>
+                <h1>text tab</h1>
+                <p>This is text tab</p>
+              </div>
+              <div id="mask" data-tab-content>
+                <h1>mask tab</h1>
+                <p>This is mask tab</p>
+              </div>
+              <div id="frames" data-tab-content>
+                <h1>frames tab</h1>
+                <p>This is frames tab</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="drawScreen"></canvas>
+        </div>
+      </div>
+    </div>
+    <script src="./js/index.js" type="module"></script>
+  </body>
+</html>
