@@ -14,7 +14,7 @@
         <div class="logo">Logo</div>
         <ul>
           <li class="white-btn">
-            <label for="file-selector" class="cursor-pointer" >Load</label>
+            <label for="file-selector" class="cursor-pointer">Load</label>
             <input
               type="file"
               id="file-selector"
@@ -22,17 +22,17 @@
               accept=".jpg, .jpeg, .png"
             />
           </li>
-          <li class="white-btn" id = "downloadBtn">Download</li>
+          <li class="white-btn" id="downloadBtn">Download</li>
         </ul>
       </div>
       <div class="main-app">
         <div class="control">
           <div class="left">
             <ul class="tabs">
-                <li data-tab-target="#frames" class="tab">Undo</li>
-                <li data-tab-target="#frames" class="tab">Redo</li>
-                <li data-tab-target="#delete" class="active tab">Delete</li>
-                <li data-tab-target="#frames" class="tab">Reset</li>
+              <li id="undo" class="tab">Undo</li>
+              <li id="redo" class="tab">Redo</li>
+              <li id="delete" class="active tab">Delete</li>
+              <li id="reset" class="tab">Reset</li>
               <li data-tab-target="#crop" class="tab">Crop</li>
               <li data-tab-target="#rotate" class="tab">Rotate</li>
               <li data-tab-target="#flip" class="tab">Flip</li>
@@ -45,29 +45,44 @@
           </div>
           <div class="right">
             <div class="tab-content">
-              <div id="delete" data-tab-content class="active">
-                <h1>Delete tab</h1>
-                <p>This is delete tab</p>
-              </div>
               <div id="crop" data-tab-content>
-                <h1>crop tab</h1>
-                <p>This is crop tab</p>
+                <h1>Enter x</h1>
+                <input type="text" />
+                <h1>Enter y</h1>
+                <input type="text" />
+                <button type="submit" class="apply-button">Apply</button>
               </div>
               <div id="rotate" data-tab-content>
-                <h1>rotate tab</h1>
-                <p>This is rotate tab</p>
+                <div class="div" id="rotateLeft">Rotate Left</div>
+                <div class="div" id="rotateRight">Rotate right</div>
+                <form action="">
+                  <label for="rotateAngle">Angle:</label
+                  ><input type="text" value="angle" id="rotateAngle" /><br />
+                  <button type="submit" class="apply-button">Apply</button>
+                </form>
               </div>
               <div id="flip" data-tab-content>
-                <h1>flip tab</h1>
-                <p>This is flip tab</p>
+                <div id="flipHorizontal">Flip Horizontal</div>
+                <div id="flipVertical">Flip Vertical</div>
               </div>
-              <div id="draw" data-tab-content>
-                <h1>draw tab</h1>
-                <p>This is draw tab</p>
-              </div>
+              <div id="draw" data-tab-content>Brush Size Brush color</div>
               <div id="shape" data-tab-content>
-                <h1>shape tab</h1>
-                <p>This is shape tab</p>
+                <div id="newRectangle">New Rectangle</div>
+                <div id="newTriangle">Triangle</div>
+                <div id="newCircle">Circle</div>
+                <div class="white-btn">
+                  <label for="newImage" class="cursor-pointer"
+                    >New Image Layer</label
+                  >
+                  <input
+                    type="file"
+                    id="newImage"
+                    class="hidden"
+                    accept=".jpg, .jpeg, .png"
+                  />
+                </div>
+                <div id="fillColor">Fill</div>
+                <div id="stroke">Stroke Color</div>
               </div>
               <div id="text" data-tab-content>
                 <h1>text tab</h1>
@@ -89,6 +104,7 @@
         </div>
       </div>
     </div>
+    <!-- <script src="./js/variables.js"></script> -->
     <script src="./js/index.js" type="module"></script>
   </body>
 </html>
