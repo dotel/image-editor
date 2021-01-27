@@ -5,7 +5,7 @@ let ctx = canvas.getContext("2d");
 
 let image = new Image();
 
-image.src = "../images/horizontal.jpg";
+image.src = "./images/horizontal.jpg";
 
 initializeLayers(ctx, canvas, image);
 
