@@ -10,12 +10,8 @@ function resizer(ctx, selectedObj, selectionHandles) {
 
     var half = BOX_SIZE / 2;
 
-    // console.log(BOX_SIZE)
-
     selectionHandles[0].x = this.x - half;
     selectionHandles[0].y = this.y - half;
-
-    // console.log(selectionHandles[0])
 
     selectionHandles[1].x = this.x + this.w / 2 - half;
     selectionHandles[1].y = this.y - half;
@@ -41,10 +37,7 @@ function resizer(ctx, selectedObj, selectionHandles) {
     ctx.fillStyle = BOX_COLOR;
     for (var i = 0; i < 8; i++) {
       var cur = selectionHandles[i];
-      // ctx.beginPath();
-      // ctx.arc(cur.x, cur.y, BOX_SIZE, 0, 2 * Math.PI);
-      // ctx.fill();
-      // console.log(cur.x, cur.y, BOX_SIZE, BOX_SIZE)
+
       ctx.fillRect(cur.x, cur.y, BOX_SIZE, BOX_SIZE);
     }
   }

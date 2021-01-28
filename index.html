@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/index.css" />
 
@@ -10,20 +16,23 @@
   </head>
   <body>
     <div class="main-wrapper">
-      <div class="top-bar">
-        <div class="logo">Logo</div>
-        <ul>
-          <li class="white-btn">
-            <label for="file-selector" class="cursor-pointer">Load</label>
-            <input
-              type="file"
-              id="file-selector"
-              class="hidden"
-              accept=".jpg, .jpeg, .png"
-            />
-          </li>
-          <li class="white-btn" id="downloadBtn">Download</li>
-        </ul>
+      <div class="top-bar-wrapper">
+        <div class="top-bar">
+          <div class="logo"><h1>Image Editor</h1></div>
+          <div class="image-size-indicator">Image size:</div>
+          <ul>
+            <li class="white-btn">
+              <label for="file-selector" class="cursor-pointer">Load</label>
+              <input
+                type="file"
+                id="file-selector"
+                class="hidden"
+                accept=".jpg, .jpeg, .png"
+              />
+            </li>
+            <li class="white-btn" id="downloadBtn">Download</li>
+          </ul>
+        </div>
       </div>
       <div class="main-app">
         <div class="control">
@@ -41,6 +50,7 @@
               <li data-tab-target="#text" class="tab">Text</li>
               <li data-tab-target="#mask" class="tab">Mask</li>
               <li data-tab-target="#frames" class="tab">Frames</li>
+              <li data-tab-target="#filters" class="tab">Filters</li>
             </ul>
           </div>
           <div class="right">
@@ -55,7 +65,7 @@
               <div id="rotate" data-tab-content>
                 <div class="div" id="rotateLeft">Rotate Left</div>
                 <div class="div" id="rotateRight">Rotate right</div>
-                <form action="">
+                <form action="#">
                   <label for="rotateAngle">Angle:</label
                   ><input type="text" value="angle" id="rotateAngle" /><br />
                   <button type="submit" class="apply-button">Apply</button>
@@ -85,8 +95,35 @@
                 <div id="stroke">Stroke Color</div>
               </div>
               <div id="text" data-tab-content>
-                <h1>text tab</h1>
-                <p>This is text tab</p>
+                <form id="newText">
+                  Text: <input name="text" id="inputText" type="text" /><br />
+                  <span>Color: </span>
+                  <input
+                    type="color"
+                    name="color"
+                    class="color-picker"
+                    value="#ff4040"
+                  />
+                  Size:
+                  <input
+                    name="size"
+                    type="range"
+                    min="10"
+                    max="50"
+                    value="14"
+                    id="colorPicked"
+                    onchange="this.nextElementSibling.value=this.value"
+                  />
+                  <input
+                    type="number"
+                    id="fontSize"
+                    min="10"
+                    max="50"
+                    value="14"
+                    onchange="this.previousElementSibling.value=this.value"
+                  />
+                  <button type="submit" class="apply-button">Apply</button>
+                </form>
               </div>
               <div id="mask" data-tab-content>
                 <h1>mask tab</h1>
@@ -95,6 +132,13 @@
               <div id="frames" data-tab-content>
                 <h1>frames tab</h1>
                 <p>This is frames tab</p>
+              </div>
+              <div id="filters" data-tab-content>
+                <h1>This is filters tab</h1>
+                <p>
+                  You can choose from sepia, tint, grayscale and a couple more
+                  filters
+                </p>
               </div>
             </div>
           </div>

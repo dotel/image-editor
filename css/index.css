@@ -1,52 +1,50 @@
 body {
   background-color: #1e1f22;
+  height: 100%;
 }
 .canvas-wrapper {
   float: right;
-  width: calc(100% - 300px - 20px);
-  outline: 2px solid red;
-  padding: 10px;
+  width: calc(100% - 300px - 100px);
+  margin-right: 100px;
   height: 100%;
-  /* position: absolute; */
   position: relative;
-  /* left: 50%;
-  top: 50%; */
-  /* transform: translateX(-50%) translateY(-50%); */
   background-color: #2b2c2f;
-  
 }
 
 canvas {
-  /* position: absolute; */
-  /* object-fit: cover; */
-  /* width: 100%; */
-  /* height: 250px; */
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
   width: auto;
-  height: auto; 
+  height: auto;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
 
-.top-bar {
-  height: 65px;
+.top-bar-wrapper {
+  height: 75px;
   color: #f0f1f2;
   background-color: #1e1f22;
 }
+
+.top-bar {
+  padding-top: 1rem;
+}
+
 .main-wrapper {
-  margin: 20px 20px 0 20px;
+  margin-left: 20px;
 }
 .main-app {
+  background-color: #2b2c2f;
   position: relative;
+  overflow: hidden;
   width: 100%;
   content: "";
   display: table;
   clear: both;
-  height: calc(100vh - 65px - 20px);
+  height: calc(100vh - 75px);
 }
 
 .main-app .control {
@@ -75,7 +73,6 @@ canvas {
   border: none;
   color: white;
   padding: 15px 20px;
-  /* margin-left: 40px; */
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -84,7 +81,6 @@ canvas {
 }
 
 .main-app .control .right {
-  height: 200px;
   width: 80%;
   float: right;
   color: #f0f1f2;
@@ -95,14 +91,27 @@ canvas {
 .top-bar .logo {
   float: left;
 }
+
+.top-bar .logo h1 {
+  color: #5c5ccc;
+  font-family: "Megrim", cursive;
+  font-weight: 400;
+}
+
+.top-bar .image-size-indicator {
+  margin: 0 auto;
+  display: none;
+}
+
 .top-bar ul {
   float: right;
+  margin-right: 20px;
 }
 
 .top-bar .account {
   float: right;
 }
-.top-bar ul li {
+.top-bar-wrapper ul li {
   list-style: none;
   float: left;
 }
@@ -139,6 +148,14 @@ canvas {
 }
 
 .cursor-pointer {
+  cursor: pointer;
+}
+
+.color-picker {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 100%;
   cursor: pointer;
 }
 

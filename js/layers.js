@@ -7,6 +7,7 @@ import {
 import Rectangle from "./rectangleObject.js";
 import ImageObject from "./imageobject.js";
 import { INTERVAL, BOX_SIZE, BOX_COLOR } from "./constants.js";
+import TextObject from "./textobject.js";
 // import W from './variables.js'
 var redraw = { status: false };
 var isDrag = false;
@@ -26,10 +27,6 @@ var topLayerContext;
 var offsetx, offsety;
 var actualCanvasHeight, actualCanvasWidth;
 
-// var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
-
-var distanceFromLeft, distanceFromTop;
-
 function addRectangle(x, y, w, h, fill) {
   var rect = new Rectangle();
   rect.x = x;
@@ -40,6 +37,7 @@ function addRectangle(x, y, w, h, fill) {
   objects.push(rect);
   redraw.status = false;
 }
+
 
 function initializeLayers(oCtx, oCanvas, image) {
   img = image;
@@ -58,9 +56,6 @@ function initializeLayers(oCtx, oCanvas, image) {
     topLayer.height = HEIGHT;
     topLayer.width = WIDTH;
     topLayerContext = topLayer.getContext("2d");
-
-    // distanceFromLeft = canvas.getBoundingClientRect().left;
-    // distanceFromTop = parseInt(canvas.getBoundingClientRect().top);
 
     setInterval(mainDraw, INTERVAL);
     canvas.onmousedown = handleMouseDown;
@@ -81,18 +76,10 @@ function clear(c) {
 
 function mainDraw() {
   if (redraw.status == false) {
-    // objects[2].angle = 40;
     clear(ctx);
 
     ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
     for (var i = 0; i < objects.length; i++) {
-      // if (i == objects.indexOf(selectedObj)) {
-      // selectedObj.draw(ctx);
-      // document.getElementById("rotateRight").onclick = () =>
-      //   (selectedObj.angle = 20);
-      // document.getElementById("rotateLeft").onclick = () =>
-      //   (selectedObj.angle = 20);
-      // } else
       objects[i].draw(ctx, selectedObj, selectionHandles);
     }
 
@@ -250,7 +237,7 @@ function setRatio() {
 
 window.onresize = setRatio;
 
-document.getElementById("newRectangle").onclick = function (e) {
+document.getElementById("newRectangle").addEventListener("click", (e) => {
   addRectangle(
     ratioFixedSizeX(50),
     ratioFixedSizeY(50),
@@ -258,10 +245,21 @@ document.getElementById("newRectangle").onclick = function (e) {
     ratioFixedSizeY(100),
     randomColor()
   );
-};
+});
 
-var newImageLayer = document.getElementById("newImage");
-newImageLayer.onchange = function (e) {
+document.getElementById("newText").addEventListener("submit", (e) => {
+  e.preventDefault();
+  var data = new FormData(newText);
+  var textProperties = {};
+  for (const [name, value] of data) {
+    textProperties[name] = value;
+  }
+  var textLayer = new TextObject(textProperties, redraw);
+  objects.push(textLayer);
+  redraw.status = false;
+});
+
+document.getElementById("newImage").addEventListener("click", (e) => {
   var file = newImageLayer.files[0];
   var fr = new FileReader();
   fr.onload = createImage;
@@ -272,27 +270,16 @@ newImageLayer.onchange = function (e) {
     imageLayer.image.src = fr.result;
     objects.push(imageLayer);
   }
-};
+});
 
 function getMouse(e) {
   var element = canvas;
   var offsetX = 0;
   var offsetY = 0;
 
-  // if (element.offsetParent != undefined) {
-  // do {
   offsetX = canvas.getBoundingClientRect().left;
   offsetY = parseInt(canvas.getBoundingClientRect().top);
-  // } while ((element = element.offsetParent));
-  // }
-  // offsetX += element.offsetLeft;
-  // offsetY += element.offsetTop;
 
-  // offsetX -= distanceFromLeft;
-  // offsetY -= distanceFromTop;
-
-  //pagex gives how far the mouse is in the document from the left side
-  //offsetx and y are giving how far that element is from the left and top of the element
   mx = ratioFixedSizeX(e.pageX - offsetX);
   my = ratioFixedSizeY(e.pageY - offsetY);
 }
