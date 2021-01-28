@@ -1,4 +1,4 @@
-import { initializeLayers } from "./layers.js";
+import { initializeLayers} from "./layers.js";
 
 let canvas = document.getElementById("drawScreen");
 let ctx = canvas.getContext("2d");
@@ -26,6 +26,8 @@ tabs.forEach((tab) => {
   });
 });
 
+
+// when new image is loaded for editing
 var input = document.getElementById("file-selector");
 
 input.onchange = function () {
@@ -36,6 +38,7 @@ input.onchange = function () {
   function createImage() {
     image.src = fr.result;
   }
+  clearLayers();
 };
 
 function download() {

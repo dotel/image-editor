@@ -8,7 +8,6 @@ import Rectangle from "./rectangleObject.js";
 import ImageObject from "./imageobject.js";
 import { INTERVAL, BOX_SIZE, BOX_COLOR } from "./constants.js";
 import TextObject from "./textobject.js";
-// import W from './variables.js'
 var redraw = { status: false };
 var isDrag = false;
 var isResizeDrag;
@@ -38,7 +37,6 @@ function addRectangle(x, y, w, h, fill) {
   redraw.status = false;
 }
 
-
 function initializeLayers(oCtx, oCanvas, image) {
   img = image;
   canvas = oCanvas;
@@ -66,7 +64,7 @@ function initializeLayers(oCtx, oCanvas, image) {
       selectionHandles.push(new Rectangle());
     }
 
-    addRectangle(0, 0, 0, 0, randomColor());
+    // addRectangle(0, 0, 0, 0, randomColor());
   };
 }
 
@@ -82,7 +80,6 @@ function mainDraw() {
     for (var i = 0; i < objects.length; i++) {
       objects[i].draw(ctx, selectedObj, selectionHandles);
     }
-
     redraw.status = true;
   }
 }
@@ -202,7 +199,6 @@ function handleMouseDown(e) {
     objects[i].draw(topLayerContext);
 
     var imageData = topLayerContext.getImageData(mx, my, 1, 1);
-
     if (imageData.data[3] > 0) {
       selectedObj = objects[i];
       offsetx = mx - selectedObj.x;
@@ -254,19 +250,20 @@ document.getElementById("newText").addEventListener("submit", (e) => {
   for (const [name, value] of data) {
     textProperties[name] = value;
   }
-  var textLayer = new TextObject(textProperties, redraw);
+  var textLayer = new TextObject(textProperties, redraw, objects);
   objects.push(textLayer);
   redraw.status = false;
 });
 
-document.getElementById("newImage").addEventListener("click", (e) => {
+var newImageLayer = document.getElementById("newImage");
+newImageLayer.addEventListener("change", (e) => {
   var file = newImageLayer.files[0];
   var fr = new FileReader();
   fr.onload = createImage;
   fr.readAsDataURL(file);
 
   function createImage() {
-    var imageLayer = new ImageObject(redraw);
+    var imageLayer = new ImageObject(redraw, 200, 200);
     imageLayer.image.src = fr.result;
     objects.push(imageLayer);
   }
@@ -278,10 +275,12 @@ function getMouse(e) {
   var offsetY = 0;
 
   offsetX = canvas.getBoundingClientRect().left;
-  offsetY = parseInt(canvas.getBoundingClientRect().top);
+  offsetY = canvas.getBoundingClientRect().top;
 
   mx = ratioFixedSizeX(e.pageX - offsetX);
   my = ratioFixedSizeY(e.pageY - offsetY);
 }
+
+// clears all previous objects and load the image to start editing
 
 export { initializeLayers };

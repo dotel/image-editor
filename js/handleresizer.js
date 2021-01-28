@@ -36,9 +36,9 @@ function resizer(ctx, selectedObj, selectionHandles) {
 
     ctx.fillStyle = BOX_COLOR;
     for (var i = 0; i < 8; i++) {
-      var cur = selectionHandles[i];
+      var selectionHandle = selectionHandles[i];
 
-      ctx.fillRect(cur.x, cur.y, BOX_SIZE, BOX_SIZE);
+      ctx.fillRect(selectionHandle.x, selectionHandle.y, BOX_SIZE, BOX_SIZE);
     }
   }
 }

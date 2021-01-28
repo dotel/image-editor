@@ -2,11 +2,11 @@ import { ratio, ratioFixedSizeX, ratioFixedSizeY } from "./utilities.js";
 import { resizer } from "./handleresizer.js";
 
 export default class ImageObject {
-  constructor(redraw) {
+  constructor(redraw, width, height) {
     this.x = 0;
     this.y = 0;
-    this.w = ratioFixedSizeX(200);
-    this.h = ratioFixedSizeY(200);
+    this.w = ratioFixedSizeX(width);
+    this.h = ratioFixedSizeY(height);
     this.angle;
     this.image = new Image();
     redraw.status = false;
