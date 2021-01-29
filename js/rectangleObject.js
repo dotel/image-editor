@@ -6,13 +6,15 @@ export default class Rectangle {
     this.x;
     this.y;
     this.angle;
+    this.width;
+    this.height;
   }
 
-  draw(context, selectedObj, selectionHandles) {
+  draw(context, selectedObject, selectionHandles) {
     context.fillStyle = this.fill;
 
-    context.fillRect(this.x, this.y, this.w, this.h);
+    context.fillRect(this.x, this.y, this.width, this.height);
 
-    resizer.bind(this)(context, selectedObj, selectionHandles);
+    resizer.bind(this)(context, selectedObject, selectionHandles);
   }
 }

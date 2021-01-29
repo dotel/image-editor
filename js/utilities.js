@@ -3,8 +3,8 @@ var ratio = {
   yratio: null,
 };
 
-function clearContext(ctx, height, width) {
-  ctx.clearRect(0, 0, height, width);
+function clearContext(ctx, width, height) {
+  ctx.clearRect(0, 0, width, height);
 }
 
 function randomColor() {
@@ -34,6 +34,19 @@ function ratioFixedSizeX(x) {
 function ratioFixedSizeY(y) {
   return y / ratio.yratio;
 }
+
+
+function getMouseLocation(e, canvas, mouseX, mouseY) {
+  var offsetX = 0;
+  var offsetY = 0;
+
+  offsetX = canvas.getBoundingClientRect().left;
+  offsetY = canvas.getBoundingClientRect().top;
+
+  mouseX = ratioFixedSizeX(e.pageX - offsetX);
+  mouseY = ratioFixedSizeY(e.pageY - offsetY);
+}
+
 export {
   clearContext,
   randomColor,
@@ -41,5 +54,6 @@ export {
   angleToRadian,
   ratioFixedSizeX,
   ratioFixedSizeY,
+  getMouseLocation,
   ratio,
 };

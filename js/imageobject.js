@@ -5,14 +5,14 @@ export default class ImageObject {
   constructor(redraw, width, height) {
     this.x = 0;
     this.y = 0;
-    this.w = ratioFixedSizeX(width);
-    this.h = ratioFixedSizeY(height);
+    this.width = ratioFixedSizeX(width);
+    this.height = ratioFixedSizeY(height);
     this.angle;
     this.image = new Image();
-    redraw.status = false;
+    redraw.status = true;
   }
-  draw(context, selectedObj, selectionHandles) {
-    context.drawImage(this.image, this.x, this.y, this.w, this.h);
-    resizer.bind(this)(context, selectedObj, selectionHandles);
+  draw(context, selectedObject, selectionHandles) {
+    context.drawImage(this.image, this.x, this.y, this.width, this.height);
+    resizer.bind(this)(context, selectedObject, selectionHandles);
   }
 }

@@ -19,8 +19,8 @@ export default class TextObject {
     this.tempCtx.textAlign = "left";
     this.tempCtx.textBaseline = "top";
 
+    // Fill the temporary canvas with least opacity color to make it draggable
     this.tempCtx.globalAlpha = 0.01;
-    console.log(this.tempCanvas.width);
     this.tempCtx.fillRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
     this.tempCtx.globalAlpha = 1.0;
 
@@ -31,12 +31,15 @@ export default class TextObject {
       this.tempCanvas.width,
       this.tempCanvas.height
     );
+
+    // push the image of the text to the objects array and remove the original text
     this.textImage.image.src = this.tempCanvas.toDataURL();
     objects.push(this.textImage);
     objects = objects.filter((item) => item !== this);
-    console.log(objects)
   }
   draw(ctx, selectedObject, selectionHandles) {
-    // this.textImage.draw(ctx, selectedObject, selectionHandles);
+    /**
+     * don't know why it's being called since this object is already removed from the objects array, weird
+     */
   }
 }

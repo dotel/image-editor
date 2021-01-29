@@ -1,4 +1,4 @@
-import { initializeLayers} from "./layers.js";
+import { initializeLayers, clearLayers } from "./layers.js";
 
 let canvas = document.getElementById("drawScreen");
 let ctx = canvas.getContext("2d");
@@ -25,7 +25,6 @@ tabs.forEach((tab) => {
     activeTab.classList.add("active");
   });
 });
-
 
 // when new image is loaded for editing
 var input = document.getElementById("file-selector");
