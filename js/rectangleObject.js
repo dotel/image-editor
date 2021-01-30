@@ -1,13 +1,13 @@
 import { resizer } from "./handleresizer.js";
-import { ratio } from "./utilities.js";
+import { ratio, ratioFixedSizeX, ratioFixedSizeY } from "./utilities.js";
 
 export default class Rectangle {
-  constructor() {
-    this.x;
-    this.y;
-    this.angle;
-    this.width;
-    this.height;
+  constructor(x, y, width, height, fill) {
+    this.x = ratioFixedSizeX(x);
+    this.y = ratioFixedSizeY(y);
+    this.width = ratioFixedSizeX(width);
+    this.height = ratioFixedSizeY(height);
+    this.fill = fill;
   }
 
   draw(context, selectedObject, selectionHandles) {

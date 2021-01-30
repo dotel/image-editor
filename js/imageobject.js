@@ -7,7 +7,6 @@ export default class ImageObject {
     this.y = 0;
     this.width = ratioFixedSizeX(width);
     this.height = ratioFixedSizeY(height);
-    this.angle;
     this.image = new Image();
     redraw.status = true;
   }

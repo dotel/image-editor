@@ -4,281 +4,367 @@ import {
   ratioFixedSizeX,
   ratioFixedSizeY,
   clearContext,
+  deepCloneObj,
 } from "./utilities.js";
 import Rectangle from "./rectangleObject.js";
 import ImageObject from "./imageobject.js";
 import { INTERVAL, BOX_SIZE, BOX_COLOR } from "./constants.js";
-import TextObject from "./textobject.js";
+import { addTextImage } from "./texttoimage.js";
+import ObjectState from "./objectstates.js";
 
-var redraw = { status: false };
-var isDrag = false;
-var isResizeDrag;
-var canvas;
-var ctx;
-var mouseX, mouseY;
-var selectedObject = -1;
-var selectionHandles = [];
-var resizeHandle = null;
-var objects = [];
-var HEIGHT;
-var WIDTH;
-var img;
-var topLayer;
-var topLayerContext;
-var offsetx, offsety;
-var actualCanvasHeight, actualCanvasWidth;
-
-function initializeLayers(originalCtx, originalCanvas, image) {
-  img = image;
-  canvas = originalCanvas;
-  ctx = originalCtx;
-
-  canvas.onmousedown = handleMouseDown;
-  canvas.onmouseup = handleMouseUp;
-  canvas.onmousemove = handleMouseMove;
-
-  image.onload = () => {
-    HEIGHT = image.height;
-    WIDTH = image.width;
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
-    ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
-
-    setRatio();
-
-    // A top layer canvas to draw all the objects which are constantly redrawn
-    topLayer = document.createElement("canvas");
-    topLayer.height = HEIGHT;
-    topLayer.width = WIDTH;
-    topLayerContext = topLayer.getContext("2d");
-
-    setInterval(mainDraw, INTERVAL);
-
-    for (var i = 0; i < 8; i++) {
-      selectionHandles.push(new Rectangle());
-    }
-  };
-}
-
-function mainDraw() {
-  if (redraw.status == true) {
-    clearContext(ctx, WIDTH, HEIGHT);
-
-    ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
-    for (var i = 0; i < objects.length; i++) {
-      objects[i].draw(ctx, selectedObject, selectionHandles);
-    }
-    redraw.status = false;
+export default class Layers {
+  constructor() {
+    this.redraw = { status: false };
+    this.isDrag = false;
+    this.isResizeDrag;
+    this.canvas;
+    this.ctx;
+    this.mouseX, this.mouseY;
+    this.selectedObject = -1;
+    this.selectionHandle = [];
+    this.resizeHandle = null;
+    this.objects = [];
+    this.height;
+    this.width;
+    this.img;
+    this.topLayer;
+    this.topLayerContext;
+    this.offsetx, this.offsety;
+    this.actualCanvasHeight, this.actualCanvasWidth;
+    this.changes = [new ObjectState(this.objects)];
+    this.recentUndo = false;
+    this.oldselectedObject;
+    this.stateChangeRequired;
+    this.currentState = 0;
   }
-}
 
-function handleMouseMove(e) {
-  if (isDrag) {
-    setMouseLocation(e);
-    selectedObject.x = mouseX - offsetx;
-    selectedObject.y = mouseY - offsety;
-    redraw.status = true;
-  } else if (isResizeDrag) {
-    resizeSelectedObject();
+  initializeLayers(originalCtx, originalCanvas, image) {
+    this.img = image;
+    this.canvas = originalCanvas;
+    this.ctx = originalCtx;
+
+    this.canvas.onmousedown = this.handleMouseDown.bind(this);
+    this.canvas.onmousemove = this.handleMouseMove.bind(this);
+    this.canvas.onmouseup = this.handleMouseUp.bind(this);
+
+    this.handleNewLayersAddition.bind(this)();
+
+    image.onload = () => {
+      this.height = image.height;
+      this.width = image.width;
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+      this.ctx.drawImage(this.img, 0, 0, this.width, this.height);
+
+      this.setRatio();
+
+      // A top layer canvas to draw all the this.objects which are constantly this.redrawn
+      this.topLayer = document.createElement("canvas");
+      this.topLayer.height = this.height;
+      this.topLayer.width = this.width;
+      this.topLayerContext = this.topLayer.getContext("2d");
+
+      setInterval(this.mainDraw.bind(this), INTERVAL);
+
+      for (var i = 0; i < 8; i++) {
+        this.selectionHandle.push(new Rectangle());
+      }
+    };
   }
-  setMouseLocation(e);
-  if (selectedObject !== -1 && !isResizeDrag) {
-    for (var i = 0; i < 8; i++) {
-      var selectionHandle = selectionHandles[i];
 
-      if (
-        mouseX >= selectionHandle.x &&
-        mouseX <= selectionHandle.x + BOX_SIZE &&
-        mouseY >= selectionHandle.y &&
-        mouseY <= selectionHandle.y + BOX_SIZE
-      ) {
-        resizeHandle = i;
+  mainDraw() {
+    if (this.redraw.status == true) {
+      clearContext(this.ctx, this.width, this.height);
 
-        redraw.status = true;
+      this.ctx.drawImage(this.img, 0, 0, this.width, this.height);
+      for (var i = 0; i < this.objects.length; i++) {
+        this.objects[i].draw(
+          this.ctx,
+          this.selectedObject,
+          this.selectionHandle
+        );
+      }
+      this.redraw.status = false;
+    }
+  }
 
-        switch (i) {
-          case 0:
-            this.style.cursor = "nw-resize";
-            break;
-          case 1:
-            this.style.cursor = "n-resize";
-            break;
-          case 2:
-            this.style.cursor = "ne-resize";
-            break;
-          case 3:
-            this.style.cursor = "w-resize";
-            break;
-          case 4:
-            this.style.cursor = "e-resize";
-            break;
-          case 5:
-            this.style.cursor = "sw-resize";
-            break;
-          case 6:
-            this.style.cursor = "s-resize";
-            break;
-          case 7:
-            this.style.cursor = "se-resize";
-            break;
-        }
+  handleNewLayersAddition() {
+    window.onresize = this.setRatio.bind(this);
+
+    document.getElementById("newRectangle").addEventListener("click", (e) => {
+      this.addRectangle(
+        0,
+        0,
+        Math.random() * 400,
+        Math.random() * 400,
+        randomColor()
+      );
+    });
+
+    document.getElementById("newText").addEventListener("submit", (e) => {
+      this.addText.bind(this)(e);
+    });
+
+    var newImageLayer = document.getElementById("newImage");
+    newImageLayer.addEventListener("change", (e) => {
+      this.addImage.bind(this)(newImageLayer, e);
+    });
+  }
+
+  handleMouseDown(e) {
+    this.stateChangeRequired = false;
+    this.oldselectedObject = deepCloneObj(this.selectedObject);
+    this.setMouseLocation(e);
+    if (this.resizeHandle !== null) {
+      this.isResizeDrag = true;
+      return;
+    }
+    for (var i = this.objects.length - 1; i >= 0; i--) {
+      this.objects[i].draw(this.topLayerContext);
+
+      var imageData = this.topLayerContext.getImageData(
+        this.mouseX,
+        this.mouseY,
+        1,
+        1
+      );
+      if (imageData.data[3] > 0) {
+        this.selectedObject = this.objects[i];
+        this.offsetx = this.mouseX - this.selectedObject.x;
+        this.offsety = this.mouseY - this.selectedObject.y;
+        this.selectedObject.x = this.mouseX - this.offsetx;
+        this.selectedObject.y = this.mouseY - this.offsety;
+        this.isDrag = true;
+        this.redraw.status = true;
+        clearContext(this.topLayerContext, this.width, this.height);
         return;
       }
     }
-    isResizeDrag = false;
-    resizeHandle = null;
-    this.style.cursor = "auto";
+    clearContext(this.topLayerContext, this.width, this.height);
+    this.selectedObject = -1;
+    this.redraw.status = true;
   }
-}
 
-function resizeSelectedObject() {
-  var oldx = selectedObject.x;
-  var oldy = selectedObject.y;
+  handleMouseMove(e) {
+    if (this.isDrag) {
+      this.setMouseLocation(e);
+      this.selectedObject.x = this.mouseX - this.offsetx;
+      this.selectedObject.y = this.mouseY - this.offsety;
+      this.redraw.status = true;
+    } else if (this.isResizeDrag) {
+      this.resizeSelectedObject();
+    }
+    this.setMouseLocation(e);
+    if (this.selectedObject !== -1 && !this.isResizeDrag) {
+      for (var i = 0; i < 8; i++) {
+        var selectionHandle = this.selectionHandle[i];
+        if (
+          this.mouseX >= selectionHandle.x &&
+          this.mouseX <= selectionHandle.x + BOX_SIZE &&
+          this.mouseY >= selectionHandle.y &&
+          this.mouseY <= selectionHandle.y + BOX_SIZE
+        ) {
+          this.resizeHandle = i;
+          this.redraw.status = true;
 
-  switch (resizeHandle) {
-    case 0:
-      selectedObject.x = mouseX;
-      selectedObject.y = mouseY;
-      selectedObject.width += oldx - mouseX;
-      selectedObject.height += oldy - mouseY;
-      break;
-    case 1:
-      selectedObject.y = mouseY;
-      selectedObject.height += oldy - mouseY;
-      break;
-    case 2:
-      selectedObject.y = mouseY;
-      selectedObject.width = mouseX - oldx;
-      selectedObject.height += oldy - mouseY;
-      break;
-    case 3:
-      selectedObject.x = mouseX;
-      selectedObject.width += oldx - mouseX;
-      break;
-    case 4:
-      selectedObject.width = mouseX - oldx;
-      break;
-    case 5:
-      selectedObject.x = mouseX;
-      selectedObject.width += oldx - mouseX;
-      selectedObject.height = mouseY - oldy;
-      break;
-    case 6:
-      selectedObject.height = mouseY - oldy;
-      break;
-    case 7:
-      selectedObject.width = mouseX - oldx;
-      selectedObject.height = mouseY - oldy;
-      break;
-  }
-  redraw.status = true;
-}
-
-function handleMouseDown(e) {
-  setMouseLocation(e);
-  if (resizeHandle !== null) {
-    isResizeDrag = true;
-    return;
-  }
-  for (var i = objects.length - 1; i >= 0; i--) {
-    objects[i].draw(topLayerContext);
-
-    var imageData = topLayerContext.getImageData(mouseX, mouseY, 1, 1);
-    if (imageData.data[3] > 0) {
-      selectedObject = objects[i];
-      offsetx = mouseX - selectedObject.x;
-      offsety = mouseY - selectedObject.y;
-      selectedObject.x = mouseX - offsetx;
-      selectedObject.y = mouseY - offsety;
-      isDrag = true;
-
-      redraw.status = true;
-      clearContext(topLayerContext, WIDTH, HEIGHT);
-      return;
+          switch (i) {
+            case 0:
+              this.canvas.style.cursor = "nw-resize";
+              break;
+            case 1:
+              this.canvas.style.cursor = "n-resize";
+              break;
+            case 2:
+              this.canvas.style.cursor = "ne-resize";
+              break;
+            case 3:
+              this.canvas.style.cursor = "w-resize";
+              break;
+            case 4:
+              this.canvas.style.cursor = "e-resize";
+              break;
+            case 5:
+              this.canvas.style.cursor = "sw-resize";
+              break;
+            case 6:
+              this.canvas.style.cursor = "s-resize";
+              break;
+            case 7:
+              this.canvas.style.cursor = "se-resize";
+              break;
+          }
+  
+          return;
+        }
+      }
+      this.isResizeDrag = false;
+      this.resizeHandle = null;
+      this.canvas.style.cursor = "auto";
     }
   }
-  clearContext(topLayerContext, WIDTH, HEIGHT);
-  selectedObject = -1;
-  redraw.status = true;
-}
 
-function handleMouseUp() {
-  isDrag = false;
-  isResizeDrag = false;
-  resizeHandle = null;
-}
 
-window.onresize = setRatio;
 
-function setRatio() {
-  actualCanvasHeight = parseFloat(window.getComputedStyle(canvas).height);
-  actualCanvasWidth = parseFloat(window.getComputedStyle(canvas).width);
 
-  ratio.xratio = actualCanvasHeight / HEIGHT;
-  ratio.yratio = actualCanvasWidth / WIDTH;
-}
+  resizeSelectedObject() {
+    var oldx = this.selectedObject.x;
+    var oldy = this.selectedObject.y;
 
-// clears all previous objects and load the new image to start editing
-function clearLayers() {
-  objects = [];
-}
+    switch (this.resizeHandle) {
+      case 0:
+        this.selectedObject.x = this.mouseX;
+        this.selectedObject.y = this.mouseY;
+        this.selectedObject.width += oldx - this.mouseX;
+        this.selectedObject.height += oldy - this.mouseY;
+        break;
+      case 1:
+        this.selectedObject.y = this.mouseY;
+        this.selectedObject.height += oldy - this.mouseY;
+        break;
+      case 2:
+        this.selectedObject.y = this.mouseY;
+        this.selectedObject.width = this.mouseX - oldx;
+        this.selectedObject.height += oldy - this.mouseY;
+        break;
+      case 3:
+        this.selectedObject.x = this.mouseX;
+        this.selectedObject.width += oldx - this.mouseX;
+        break;
+      case 4:
+        this.selectedObject.width = this.mouseX - oldx;
+        break;
+      case 5:
+        this.selectedObject.x = this.mouseX;
+        this.selectedObject.width += oldx - this.mouseX;
+        this.selectedObject.height = this.mouseY - oldy;
+        break;
+      case 6:
+        this.selectedObject.height = this.mouseY - oldy;
+        break;
+      case 7:
+        this.selectedObject.width = this.mouseX - oldx;
+        this.selectedObject.height = this.mouseY - oldy;
+        break;
+    }
 
-document.getElementById("newRectangle").addEventListener("click", (e) => {
-  addRectangle(
-    ratioFixedSizeX(50),
-    ratioFixedSizeY(50),
-    ratioFixedSizeX(100),
-    ratioFixedSizeY(100),
-    randomColor()
-  );
-});
-
-document.getElementById("newText").addEventListener("submit", (e) => {
-  e.preventDefault();
-  var data = new FormData(newText);
-  var textProperties = {};
-  for (const [name, value] of data) {
-    textProperties[name] = value;
+    this.redraw.status = true;
   }
-  var textLayer = new TextObject(textProperties, redraw, objects, canvas);
-  objects.push(textLayer);
-  redraw.status = true;
-});
 
-var newImageLayer = document.getElementById("newImage");
-newImageLayer.addEventListener("change", (e) => {
-  var file = newImageLayer.files[0];
-  var fr = new FileReader();
-  fr.onload = createImage;
-  fr.readAsDataURL(file);
-
-  function createImage() {
-    var imageLayer = new ImageObject(redraw, 200, 200);
-    imageLayer.image.src = fr.result;
-    objects.push(imageLayer);
+  isSelectedObjectChanged(oldselectedObject){
+    return this.selectedObject.height != oldselectedObject.height ||
+        this.selectedObject.width != oldselectedObject.width || 
+        this.selectedObject.x != oldselectedObject.x || 
+        this.selectedObject.y != oldselectedObject.y;
   }
-});
 
-function setMouseLocation(e) {
-  var offsetX = 0;
-  var offsetY = 0;
+  handleMouseUp() {
+    this.isDrag = false;
+    this.isResizeDrag = false;
+    this.resizeHandle = null;
+    if(this.isSelectedObjectChanged(this.oldselectedObject)){
+      this.stateChangeRequired = true;
+    } 
+    
+    if (this.stateChangeRequired) this.createNewState();
+  }
+  setRatio() {
+    this.actualCanvasHeight = parseFloat(
+      window.getComputedStyle(this.canvas).height
+    );
+    this.actualCanvasWidth = parseFloat(
+      window.getComputedStyle(this.canvas).width
+    );
 
-  offsetX = canvas.getBoundingClientRect().left;
-  offsetY = canvas.getBoundingClientRect().top;
+    ratio.xratio = this.actualCanvasHeight / this.height;
+    ratio.yratio = this.actualCanvasWidth / this.width;
+  }
 
-  mouseX = ratioFixedSizeX(e.pageX - offsetX);
-  mouseY = ratioFixedSizeY(e.pageY - offsetY);
+  setMouseLocation(e) {
+    var offsetX = 0;
+    var offsetY = 0;
+
+    offsetX = this.canvas.getBoundingClientRect().left;
+    offsetY = this.canvas.getBoundingClientRect().top;
+
+    this.mouseX = ratioFixedSizeX(e.pageX - offsetX);
+    this.mouseY = ratioFixedSizeY(e.pageY - offsetY);
+  }
+
+  addRectangle(x, y, width, height, fill) {
+    var rect = new Rectangle(x, y, width, height, fill);
+    this.objects.push(rect);
+    this.createNewState.bind(this)();
+    console.log(JSON.stringify(this.changes))
+    this.redraw.status = true;
+  }
+
+  addText(e) {
+    e.preventDefault();
+    var data = new FormData(newText);
+    var textProperties = {};
+    for (const [name, value] of data) {
+      textProperties[name] = value;
+    }
+    new addTextImage(textProperties, this.redraw, this.objects, this.canvas);
+    this.redraw.status = true;
+    this.createNewState();
+  }
+
+  addImage(newImageLayer, e) {
+    var file = newImageLayer.files[0];
+    var fr = new FileReader();
+    fr.onload = createImage.bind(this);
+    fr.readAsDataURL(file);
+
+    function createImage() {
+      var imageLayer = new ImageObject(this.redraw, 200, 200);
+      imageLayer.image.src = fr.result;
+      this.objects.push(imageLayer);
+      this.createNewState.bind(this)();
+    }
+  }
+
+  createNewState() {
+    if (this.recentUndo) {
+      for (let i = this.changes.length - 1; i > this.currentState; i--) {
+        this.changes = this.changes.filter((obj) => obj !== this.changes[i]);
+      }
+    }
+    this.currentState++;
+    let newState = new ObjectState(this.objects);
+    this.changes[this.currentState] = newState;
+    this.recentUndo = false;
+    this.redraw.status = true;
+  }
+
+  undo() {
+    if (this.currentState > 0) {
+      let previousState = this.changes[--this.currentState];
+      let newObjectState = new ObjectState(previousState.objects);
+      this.objects = newObjectState.objects;
+      this.redraw.status = true;
+      this.recentUndo = true;
+    }
+  }
+
+  redo() {
+    if (this.currentState + 1 < this.changes.length) {
+      let previousState = this.changes[++this.currentState];
+      let newObjectState = new ObjectState(previousState.objects);
+      this.objects = newObjectState.objects;
+      this.redraw.status = true;
+    }
+  }
+
+  reset() {
+    this.currentState = this.changes.length;
+    this.objects = [];
+    this.redraw.status = true;
+  }
+
+  delete() {
+    this.objects = this.objects.filter((item) => item != this.selectedObject);
+    this.currentState = this.changes.length;
+    this.redraw.status = true;
+  }
 }
-
-function addRectangle(x, y, width, height, fill) {
-  var rect = new Rectangle();
-  rect.x = x;
-  rect.y = y;
-  rect.width = width;
-  rect.height = height;
-  rect.fill = fill;
-  objects.push(rect);
-  redraw.status = true;
-}
-
-export { initializeLayers, clearLayers };

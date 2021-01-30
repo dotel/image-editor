@@ -1,4 +1,4 @@
-import { initializeLayers, clearLayers } from "./layers.js";
+import Layers from "./layers.js";
 
 let canvas = document.getElementById("drawScreen");
 let ctx = canvas.getContext("2d");
@@ -7,7 +7,8 @@ let image = new Image();
 
 image.src = "./images/horizontal.jpg";
 
-initializeLayers(ctx, canvas, image);
+let layers = new Layers();
+layers.initializeLayers(ctx, canvas, image);
 
 const tabs = document.querySelectorAll("[data-tab-target]");
 const tabContents = document.querySelectorAll("[data-tab-content]");
@@ -37,7 +38,7 @@ input.onchange = function () {
   function createImage() {
     image.src = fr.result;
   }
-  clearLayers();
+  layers = new Layers();
 };
 
 function download() {
@@ -49,3 +50,23 @@ function download() {
 }
 
 document.getElementById("downloadBtn").addEventListener("click", download);
+
+document.getElementById('undo').addEventListener('click', ()=>{
+  layers.undo();
+})
+
+document.getElementById('redo').addEventListener('click', ()=>{
+  layers.redo();
+})
+
+document.getElementById('delete').addEventListener('click', ()=>{
+  layers.delete();
+})
+
+window.onkeypress = (e) =>{
+  if(e.key == 'Delete'){
+    if(layers.selectedObject != -1){
+      layers.delete();
+    }
+  }
+}

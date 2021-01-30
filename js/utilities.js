@@ -1,3 +1,5 @@
+import LayerObject from "./layerobject.js";
+
 var ratio = {
   xratio: null,
   yratio: null,
@@ -47,6 +49,20 @@ function getMouseLocation(e, canvas, mouseX, mouseY) {
   mouseY = ratioFixedSizeY(e.pageY - offsetY);
 }
 
+// Deep copies obj2 to obj1
+function deepCloneObj(object){
+  let layerObj = new LayerObject();
+  layerObj.draw = object.draw;
+  layerObj.x = object.x;
+  layerObj.y = object.y;
+  layerObj.width = object.width;
+  layerObj.height = object.height;
+  layerObj.fill = object.fill;
+  layerObj.image = object.image;
+  return layerObj;
+}
+
+
 export {
   clearContext,
   randomColor,
@@ -55,5 +71,6 @@ export {
   ratioFixedSizeX,
   ratioFixedSizeY,
   getMouseLocation,
+  deepCloneObj,
   ratio,
 };
