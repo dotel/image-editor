@@ -8,6 +8,12 @@
       href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+
+    <script
+      src="https://kit.fontawesome.com/828a3930be.js"
+      crossorigin="anonymous"
+    ></script>
 
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/index.css" />
@@ -30,121 +36,195 @@
                 accept=".jpg, .jpeg, .png"
               />
             </li>
-            <li class="white-btn" id="downloadBtn">Download</li>
+            <li class="white-btn download-button" id="downloadBtn">Download</li>
           </ul>
         </div>
       </div>
       <div class="main-app">
         <div class="control">
           <div class="left">
-            <ul class="tabs">
-              <li id="undo" class="tab">Undo</li>
-              <li id="redo" class="tab">Redo</li>
-              <li id="delete" class="active tab">Delete</li>
-              <li id="reset" class="tab">Reset</li>
-              <li data-tab-target="#crop" class="tab">Crop</li>
-              <li data-tab-target="#rotate" class="tab">Rotate</li>
-              <li data-tab-target="#flip" class="tab">Flip</li>
-              <li data-tab-target="#draw" class="tab">Draw</li>
-              <li data-tab-target="#shape" class="tab">Shape</li>
-              <li data-tab-target="#text" class="tab">Text</li>
-              <li data-tab-target="#mask" class="tab">Mask</li>
-              <li data-tab-target="#frames" class="tab">Frames</li>
-              <li data-tab-target="#filters" class="tab">Filters</li>
+            <ul class="tools">
+              <div class="layer-actions">
+                <li id="undo" class="tool">
+                  <i class="fas fa-undo"></i>
+                  <span class="tool-info">Undo</span>
+                 </li>
+                <li id="redo" class="tool">
+                  <i class="fas fa-redo"></i>
+                  <span class="tool-info">Redo</span>
+                </li>
+                <li id="reset" class="tool">
+                  <img src="./images/reset.svg" alt="" />
+                  <span class="tool-info">Reset</span>
+                </li>
+                <li id="delete" class="active tool">
+                  <i class="fas fa-trash"></i>
+                  <span class="tool-info">Delete</span>
+                </li>
+              </div>
+              <li data-tab-target="#crop" class="tool">
+                <i class="fas fa-crop-alt"></i>
+                <span class="tool-info">Crop</span>
+              </li>
+              <li data-tab-target="#resize" class="tool">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <span class="tool-info">Resize</span>
+              </li>
+              <li data-tab-target="#rotate" class="tool">
+                <img src="./images/rotate.svg" alt="" />
+                <span class="tool-info">Rotate</span>
+              </li>
+              <li data-tab-target="#flip" class="tool">
+                <img src="./images/flip.svg" alt="" />
+                <span class="tool-info">Flip</span>
+              </li>
+              <li data-tab-target="#draw" class="tool">
+                <i class="fas fa-pencil-alt"></i>
+                <span class="tool-info">Draw</span>
+              </li>
+              <li data-tab-target="#shape" class="tool">
+                <i class="fas fa-shapes"></i>
+                <span class="tool-info">Shapes</span>
+              </li>
+              <li data-tab-target="#icons" class="tool">
+                <i class="fas fa-star"></i>
+                <span class="tool-info">Icons</span>
+              </li>
+              <li data-tab-target="#text" class="tool">
+                <i class="fas fa-font"></i>
+                <span class="tool-info">Text</span>
+              </li>
+              <li data-tab-target="#mask" class="tool">
+                <img src="./images/mask.svg" alt="" />
+                <span class="tool-info">Mask</span>
+              </li>
+              <li data-tab-target="#frames" class="tool">
+                <img src="./images/frame.svg" alt="" />
+                <span class="tool-info">Frames</span>
+              </li>
+              <li id="sendLayerBackward" class="tool">
+                <img src="./images/send-backward.svg" alt="" />
+                <span class="tool-info">Send backward</span>
+              </li>
+              <li id="sendLayerForward" class="tool">
+                <img src="./images/bring-forward.svg" alt="" />
+                <span class="tool-info">Bring forward</span>
+              </li>
             </ul>
+            <div class="image-info">
+              <p>Image info(px)</p>
+              <div>x: <span id="currentCanvasX"></span></div>
+              <div>y: <span id="currentCanvasY"></span></div>
+            </div>
           </div>
           <div class="right">
             <div class="tab-content">
-              <div id="crop" data-tab-content>
-                <h1>Enter x</h1>
-                <input type="text" />
-                <h1>Enter y</h1>
-                <input type="text" />
-                <button type="submit" class="apply-button">Apply</button>
+              <div id="resize" data-tab-content class="active">
+                <div class="tool-options-wrapper">
+                  <form action="#" id = "imgResizeValue">
+                    <label for="valX">Enter x: </label>
+                    <input name = "xValue" id = "valX" type="text" />
+                    <br><br>
+                    <label for="valY">Enter y:</label>
+                    <input name = "yValue" id="valY" type="text" /><br />
+                    <button type="submit" class="apply-button">Apply</button>
+                  </form>
+                </div>
               </div>
               <div id="rotate" data-tab-content>
-                <div class="div" id="rotateLeft">Rotate Left</div>
-                <div class="div" id="rotateRight">Rotate right</div>
-                <form action="#">
-                  <label for="rotateAngle">Angle:</label
-                  ><input type="text" value="angle" id="rotateAngle" /><br />
-                  <button type="submit" class="apply-button">Apply</button>
-                </form>
+                <div class="tool-options-wrapper">
+                  <div class="div" id="rotateLeft">Rotate Left</div>
+                  <div class="div" id="rotateRight">Rotate right</div>
+                  <form action="#">
+                    <label for="rotateAngle">Angle:</label>
+                    <input type="text" id="rotateAngle" /><br />
+                    <button type="submit" class="apply-button">Apply</button>
+                  </form>
+                </div>
               </div>
               <div id="flip" data-tab-content>
-                <div id="flipHorizontal">Flip Horizontal</div>
-                <div id="flipVertical">Flip Vertical</div>
+                <div class="tool-options-wrapper">
+                  <div id="flipHorizontal">Flip Horizontal</div>
+                  <div id="flipVertical">Flip Vertical</div>
+                </div>
               </div>
               <div id="draw" data-tab-content>
-                <div class="color-option red"></div>
-                <div class="color-option blue"></div>
-                <div class="color-option green"></div>
-                <input type="color" class="color-picker">
-                <input type="range" min="1" max="50">
+                <div class="tool-options-wrapper">
+                  <div class="color-option red"></div>
+                  <div class="color-option blue"></div>
+                  <div class="color-option green"></div>
+                  <input type="color" class="color-picker" />
+                  <input type="range" min="1" max="50" />
+                </div>
               </div>
               <div id="shape" data-tab-content>
-                <div id="newRectangle">New Rectangle</div>
-                <div id="newTriangle">Triangle</div>
-                <div id="newCircle">Circle</div>
-                <div class="white-btn">
-                  <label for="newImage" class="cursor-pointer"
-                    >New Image Layer</label
-                  >
-                  <input
-                    type="file"
-                    id="newImage"
-                    class="hidden"
-                    accept=".jpg, .jpeg, .png"
-                  />
+                <div class="tool-options-wrapper">
+                  <div id="newRectangle">New Rectangle</div>
+                  <div id="newTriangle">Triangle</div>
+                  <div id="newCircle">Circle</div>
+                  <div class="white-btn">
+                    <label for="newImage" class="cursor-pointer"
+                      >New Image Layer</label>
+                    <input
+                      type="file"
+                      id="newImage"
+                      class="hidden"
+                      accept=".jpg, .jpeg, .png"
+                    />
+                  </div>
+                  <div id="fillColor">Fill</div>
+                  <div id="stroke">Stroke Color</div>
                 </div>
-                <div id="fillColor">Fill</div>
-                <div id="stroke">Stroke Color</div>
+              </div>
+              <div id="icons" data-tab-content>
+                <div class="tool-options-wrapper">
+                  Icons here
+                </div>
               </div>
               <div id="text" data-tab-content>
-                <form id="newText">
-                  Text: <input name="text" id="inputText" type="text" /><br />
-                  <span>Color: </span>
-                  <input
-                    type="color"
-                    name="color"
-                    class="color-picker"
-                    value="#ff4040"
-                  />
-                  Size:
-                  <input
-                    name="size"
-                    type="range"
-                    min="10"
-                    max="50"
-                    value="14"
-                    id="colorPicked"
-                    onchange="this.nextElementSibling.value=this.value"
-                  />
-                  <input
-                    type="number"
-                    id="fontSize"
-                    min="10"
-                    max="50"
-                    value="14"
-                    onchange="this.previousElementSibling.value=this.value"
-                  />
-                  <button type="submit" class="apply-button">Apply</button>
-                </form>
+                <div class="tool-options-wrapper">
+                  <form id="newText">
+                    Text: <input name="text" id="inputText" type="text" /><br />
+                    <div>Color: </div>
+                    <input
+                      type="color"
+                      name="color"
+                      class="color-picker"
+                      value="#ff4040"
+                    />
+                    <div>Size</div>
+                    <input
+                      name="size"
+                      type="range"
+                      min="10"
+                      max="50"
+                      value="14"
+                      id="colorPicked"
+                      onchange="this.nextElementSibling.value=this.value"
+                    />
+                    <input
+                      type="number"
+                      id="fontSize"
+                      min="10"
+                      max="50"
+                      value="14"
+                      onchange="this.previousElementSibling.value=this.value"
+                    />
+                    <button type="submit" class="apply-button">Apply</button>
+                  </form>
+                </div>
               </div>
               <div id="mask" data-tab-content>
-                <h1>mask tab</h1>
-                <p>This is mask tab</p>
+                <div class="tool-options-wrapper">
+                  <h1>mask tab</h1>
+                  <p>This is mask tab</p>
+                </div>
               </div>
               <div id="frames" data-tab-content>
-                <h1>frames tab</h1>
-                <p>This is frames tab</p>
-              </div>
-              <div id="filters" data-tab-content>
-                <h1>This is filters tab</h1>
-                <p>
-                  You can choose from sepia, tint, grayscale and a couple more
-                  filters
-                </p>
+                <div class="tool-options-wrapper">
+                  <h1>frames tab</h1>
+                  <p>This is frames tab</p>
+                </div>
               </div>
             </div>
           </div>

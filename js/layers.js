@@ -5,6 +5,7 @@ import {
   ratioFixedSizeY,
   clearContext,
   deepCloneObj,
+  swapArrayElement,
 } from "./utilities.js";
 import Rectangle from "./rectangleObject.js";
 import ImageObject from "./imageobject.js";
@@ -33,7 +34,7 @@ export default class Layers {
     this.actualCanvasHeight, this.actualCanvasWidth;
     this.changes = [new ObjectState(this.objects)];
     this.recentUndo = false;
-    this.oldselectedObject;
+    this.oldselectedObject = -1;
     this.stateChangeRequired;
     this.currentState = 0;
   }
@@ -112,8 +113,6 @@ export default class Layers {
   }
 
   handleMouseDown(e) {
-    this.stateChangeRequired = false;
-    this.oldselectedObject = deepCloneObj(this.selectedObject);
     this.setMouseLocation(e);
     if (this.resizeHandle !== null) {
       this.isResizeDrag = true;
@@ -130,6 +129,7 @@ export default class Layers {
       );
       if (imageData.data[3] > 0) {
         this.selectedObject = this.objects[i];
+        this.oldselectedObject = deepCloneObj(this.selectedObject);
         this.offsetx = this.mouseX - this.selectedObject.x;
         this.offsety = this.mouseY - this.selectedObject.y;
         this.selectedObject.x = this.mouseX - this.offsetx;
@@ -142,6 +142,7 @@ export default class Layers {
     }
     clearContext(this.topLayerContext, this.width, this.height);
     this.selectedObject = -1;
+    this.oldselectedObject = -1;
     this.redraw.status = true;
   }
 
@@ -193,7 +194,7 @@ export default class Layers {
               this.canvas.style.cursor = "se-resize";
               break;
           }
-  
+
           return;
         }
       }
@@ -202,9 +203,6 @@ export default class Layers {
       this.canvas.style.cursor = "auto";
     }
   }
-
-
-
 
   resizeSelectedObject() {
     var oldx = this.selectedObject.x;
@@ -250,23 +248,32 @@ export default class Layers {
     this.redraw.status = true;
   }
 
-  isSelectedObjectChanged(oldselectedObject){
-    return this.selectedObject.height != oldselectedObject.height ||
-        this.selectedObject.width != oldselectedObject.width || 
-        this.selectedObject.x != oldselectedObject.x || 
-        this.selectedObject.y != oldselectedObject.y;
-  }
-
+  
   handleMouseUp() {
     this.isDrag = false;
     this.isResizeDrag = false;
     this.resizeHandle = null;
-    if(this.isSelectedObjectChanged(this.oldselectedObject)){
+    if (this.isSelectedObjectChanged(this.oldselectedObject)) {
       this.stateChangeRequired = true;
-    } 
-    
+    }
     if (this.stateChangeRequired) this.createNewState();
+    this.stateChangeRequired = false;
   }
+
+  isSelectedObjectChanged(oldselectedObject) {
+    let x =  (
+      this.selectedObject.height != oldselectedObject.height ||
+      this.selectedObject.width != oldselectedObject.width ||
+      this.selectedObject.x != oldselectedObject.x ||
+      this.selectedObject.y != oldselectedObject.y
+    );
+    if(x){
+      console.log(JSON.stringify(oldselectedObject), JSON.stringify(this.selectedObject))
+      return x;
+    }
+
+  }
+
   setRatio() {
     this.actualCanvasHeight = parseFloat(
       window.getComputedStyle(this.canvas).height
@@ -294,7 +301,6 @@ export default class Layers {
     var rect = new Rectangle(x, y, width, height, fill);
     this.objects.push(rect);
     this.createNewState.bind(this)();
-    console.log(JSON.stringify(this.changes))
     this.redraw.status = true;
   }
 
@@ -317,7 +323,7 @@ export default class Layers {
     fr.readAsDataURL(file);
 
     function createImage() {
-      var imageLayer = new ImageObject(this.redraw, 200, 200);
+      var imageLayer = new ImageObject(this.redraw, ratioFixedSizeX(200), ratioFixedSizeY(200));
       imageLayer.image.src = fr.result;
       this.objects.push(imageLayer);
       this.createNewState.bind(this)();
@@ -325,6 +331,7 @@ export default class Layers {
   }
 
   createNewState() {
+    console.log(this.changes)
     if (this.recentUndo) {
       for (let i = this.changes.length - 1; i > this.currentState; i--) {
         this.changes = this.changes.filter((obj) => obj !== this.changes[i]);
@@ -364,7 +371,50 @@ export default class Layers {
 
   delete() {
     this.objects = this.objects.filter((item) => item != this.selectedObject);
+    this.createNewState();
     this.currentState = this.changes.length;
     this.redraw.status = true;
+  }
+
+  resize(e){
+    e.preventDefault();
+    var data = new FormData(imgResizeValue);
+    let imageSize = {};
+    for (const [name, value] of data) {
+      imageSize[name] = value;
+    }
+    this.img = this.img;
+    this.redraw.status = true;
+    this.height = imageSize.yValue;
+    this.width = imageSize.xValue;
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
+    this.setRatio();
+    this.redraw.status = true;
+    this.createNewState();
+  }
+
+  sendSelectedLayerBackward() {
+    let indexOfselectedObject = this.objects.indexOf(this.selectedObject);
+    if (indexOfselectedObject > 0) {
+      swapArrayElement(
+        this.objects,
+        indexOfselectedObject,
+        indexOfselectedObject - 1
+      );
+      this.redraw.status = true;
+    }
+  }
+
+  sendSelectedLayerForward() {
+    let indexOfselectedObject = this.objects.indexOf(this.selectedObject);
+    if (indexOfselectedObject < this.objects.length - 1) {
+      swapArrayElement(
+        this.objects,
+        indexOfselectedObject,
+        indexOfselectedObject + 1
+      );
+      this.redraw.status = true;
+    }
   }
 }

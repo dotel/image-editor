@@ -26,11 +26,7 @@ function addTextImage(textProperties, redraw, objects) {
 
   tempCtx.fillText(text, 0, 0);
 
-  let textImage = new ImageObject(
-    redraw,
-    tempCanvas.width,
-    tempCanvas.height
-  );
+  let textImage = new ImageObject(redraw, tempCanvas.width, tempCanvas.height);
 
   // push the image of the text to the objects array and remove the original text
   textImage.image.src = tempCanvas.toDataURL();
@@ -38,4 +34,4 @@ function addTextImage(textProperties, redraw, objects) {
   objects = objects.filter((item) => item !== this);
 }
 
-export {addTextImage}
+export { addTextImage };

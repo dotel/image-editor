@@ -62,6 +62,12 @@ function deepCloneObj(object){
   return layerObj;
 }
 
+function swapArrayElement(arr, i, j){
+  let temp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = temp;
+}
+
 
 export {
   clearContext,
@@ -72,5 +78,6 @@ export {
   ratioFixedSizeY,
   getMouseLocation,
   deepCloneObj,
+  swapArrayElement,
   ratio,
 };

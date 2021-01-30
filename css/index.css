@@ -61,6 +61,16 @@ canvas {
   height: 100%;
 }
 
+.image-info{
+  font-size: 14px;
+}
+.image-info p{
+  margin-top: 10px;
+  border-bottom: 2px solid #fff;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
 #rotateRight,
 #rotateLeft,
 #newRectangle,
@@ -69,7 +79,7 @@ canvas {
 }
 
 .apply-button {
-  background-color: #4caf50; /* Green */
+  background-color: #5C5CCC; 
   border: none;
   color: white;
   padding: 15px 20px;
@@ -78,6 +88,7 @@ canvas {
   display: inline-block;
   font-size: 16px;
   margin-top: 10px;
+  cursor: pointer;
 }
 
 .main-app .control .right {
@@ -86,6 +97,7 @@ canvas {
   color: #f0f1f2;
   height: 100%;
   background-color: #2b2c2f;
+  position: relative;
 }
 
 .top-bar .logo {
@@ -95,8 +107,11 @@ canvas {
 .top-bar .logo h1 {
   color: #5c5ccc;
   font-family: "Megrim", cursive;
-  font-weight: 400;
+  text-shadow: 4px 4px #000;
+	letter-spacing:0.1em;
 }
+
+
 
 .top-bar .image-size-indicator {
   margin: 0 auto;
@@ -115,6 +130,10 @@ canvas {
   list-style: none;
   float: left;
 }
+.top-bar-wrapper .download-button{
+  background-color: #5c5ccc;
+  color: #fff;
+}
 
 [data-tab-content] {
   display: none;
@@ -131,9 +150,58 @@ canvas {
   padding: 0;
 }
 
-.tab {
+.tool {
   cursor: pointer;
   padding: 10px 0;
+  position: relative;
+  display: inline-block;
+}
+
+.layer-actions li:last-child{
+  margin-bottom: 10px;
+}
+
+.layer-actions{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #2d2d2d;
+}
+
+.tool .tool-info {
+  visibility: hidden;
+  background-color: #28292c;
+  color: #fff;
+  text-align: center;
+  padding: 0 10px;
+  margin-left: 20px;
+  border-width: 5px; 
+  position: absolute;
+  z-index: 1;
+}
+
+.tool:hover .tool-info {
+  visibility: visible;
+}
+
+.tool:focus .tool-info {
+  visibility: hidden;
+}
+
+
+.tool-options-wrapper{
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.tool-options-wrapper input{
+  outline: none;
+}
+
+i.fas, i.fab, .tool img{
+  width: 20px;
+  padding-left: 15px;
 }
 
 .white-btn {
