@@ -9,9 +9,12 @@ export default class ImageObject {
     this.height = ratioFixedSizeY(height);
     this.image = new Image();
     redraw.status = true;
+    this.isDrawing;
   }
   draw(context, selectedObject, selectionHandles) {
     context.drawImage(this.image, this.x, this.y, this.width, this.height);
-    resizer.bind(this)(context, selectedObject, selectionHandles);
+    if(!this.isDrawing){
+      resizer.bind(this)(context, selectedObject, selectionHandles);
+    }
   }
 }

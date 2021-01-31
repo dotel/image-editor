@@ -37,7 +37,6 @@ function ratioFixedSizeY(y) {
   return y / ratio.yratio;
 }
 
-
 function getMouseLocation(e, canvas, mouseX, mouseY) {
   var offsetX = 0;
   var offsetY = 0;
@@ -49,25 +48,22 @@ function getMouseLocation(e, canvas, mouseX, mouseY) {
   mouseY = ratioFixedSizeY(e.pageY - offsetY);
 }
 
-// Deep copies obj2 to obj1
-function deepCloneObj(object){
-  let layerObj = new LayerObject();
+// Returns a clone of the object
+function deepCloneObj(object) {
+  let layerObj = {};
+  for (var key in object) {
+    layerObj[key] = object[key];
+  }
   layerObj.draw = object.draw;
-  layerObj.x = object.x;
-  layerObj.y = object.y;
-  layerObj.width = object.width;
-  layerObj.height = object.height;
-  layerObj.fill = object.fill;
-  layerObj.image = object.image;
   return layerObj;
 }
 
-function swapArrayElement(arr, i, j){
+// Swaps i and j index or arr array
+function swapArrayElement(arr, i, j) {
   let temp = arr[i];
   arr[i] = arr[j];
   arr[j] = temp;
 }
-
 
 export {
   clearContext,

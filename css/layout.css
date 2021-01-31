@@ -1,0 +1,63 @@
+body {
+    background-color: #1e1f22;
+    height: 100%;
+  }
+  .canvas-wrapper {
+    float: right;
+    width: calc(100% - 300px - 100px);
+    margin-right: 100px;
+    height: 100%;
+    position: relative;
+    background-color: #2b2c2f;
+  }
+  
+  .canvas {
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+  
+  .top-bar-wrapper {
+    height: 75px;
+    color: #f0f1f2;
+    background-color: #1e1f22;
+  }
+  
+  .top-bar {
+    padding-top: 1rem;
+  }
+  
+  .main-wrapper {
+    margin-left: 20px;
+  }
+  .main-app {
+    background-color: #2b2c2f;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    content: "";
+    display: table;
+    clear: both;
+    height: calc(100vh - 75px);
+  }
+  
+  .main-app .control {
+    float: left;
+    width: 300px;
+    height: 100%;
+  }
+  
+  .main-app .control .left {
+    width: 20%;
+    float: left;
+    color: #f0f1f2;
+    background-color: #1e1f22;
+    height: 100%;
+  }
+  

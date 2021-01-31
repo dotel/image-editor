@@ -31,7 +31,6 @@ function addTextImage(textProperties, redraw, objects) {
   // push the image of the text to the objects array and remove the original text
   textImage.image.src = tempCanvas.toDataURL();
   objects.push(textImage);
-  objects = objects.filter((item) => item !== this);
 }
 
 export { addTextImage };

@@ -6,6 +6,7 @@ export default class LayerObject {
     this.width;
     this.fill;
     this.image;
+    this.isDrawing;
   }
   draw() {}
 }

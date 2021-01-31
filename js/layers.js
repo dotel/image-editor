@@ -12,6 +12,16 @@ import ImageObject from "./imageobject.js";
 import { INTERVAL, BOX_SIZE, BOX_COLOR } from "./constants.js";
 import { addTextImage } from "./texttoimage.js";
 import ObjectState from "./objectstates.js";
+import Painter from "./painter.js";
+
+var originalImageWidth = document.getElementById("originalImageWidth");
+var originalImageHeight = document.getElementById("originalImageHeight");
+var maindrawInterval = {};
+
+const TOOLS = {
+  DRAW: 1,
+  CROP: 2,
+};
 
 export default class Layers {
   constructor() {
@@ -37,6 +47,9 @@ export default class Layers {
     this.oldselectedObject = -1;
     this.stateChangeRequired;
     this.currentState = 0;
+    this.cropTool;
+    this.toolSelected;
+    this.originalImage = new Image();
   }
 
   initializeLayers(originalCtx, originalCanvas, image) {
@@ -51,6 +64,14 @@ export default class Layers {
     this.handleNewLayersAddition.bind(this)();
 
     image.onload = () => {
+      if (this.height == undefined) {
+        this.originalImage.width = image.width;
+        this.originalImage.height = image.height;
+        this.originalImage.src = image.src;
+        originalImageHeight.innerText = `${image.height}`;
+        originalImageWidth.innerText = `${image.width}`;
+      }
+
       this.height = image.height;
       this.width = image.width;
       this.canvas.width = this.width;
@@ -65,7 +86,10 @@ export default class Layers {
       this.topLayer.width = this.width;
       this.topLayerContext = this.topLayer.getContext("2d");
 
-      setInterval(this.mainDraw.bind(this), INTERVAL);
+      maindrawInterval.interval = setInterval(
+        this.mainDraw.bind(this),
+        INTERVAL
+      );
 
       for (var i = 0; i < 8; i++) {
         this.selectionHandle.push(new Rectangle());
@@ -135,7 +159,7 @@ export default class Layers {
         this.selectedObject.x = this.mouseX - this.offsetx;
         this.selectedObject.y = this.mouseY - this.offsety;
         this.isDrag = true;
-        this.redraw.status = true;
+        this.redrawEverything();
         clearContext(this.topLayerContext, this.width, this.height);
         return;
       }
@@ -143,7 +167,7 @@ export default class Layers {
     clearContext(this.topLayerContext, this.width, this.height);
     this.selectedObject = -1;
     this.oldselectedObject = -1;
-    this.redraw.status = true;
+    this.redrawEverything();
   }
 
   handleMouseMove(e) {
@@ -151,7 +175,7 @@ export default class Layers {
       this.setMouseLocation(e);
       this.selectedObject.x = this.mouseX - this.offsetx;
       this.selectedObject.y = this.mouseY - this.offsety;
-      this.redraw.status = true;
+      this.redrawEverything();
     } else if (this.isResizeDrag) {
       this.resizeSelectedObject();
     }
@@ -166,7 +190,7 @@ export default class Layers {
           this.mouseY <= selectionHandle.y + BOX_SIZE
         ) {
           this.resizeHandle = i;
-          this.redraw.status = true;
+          this.redrawEverything();
 
           switch (i) {
             case 0:
@@ -245,10 +269,9 @@ export default class Layers {
         break;
     }
 
-    this.redraw.status = true;
+    this.redrawEverything();
   }
 
-  
   handleMouseUp() {
     this.isDrag = false;
     this.isResizeDrag = false;
@@ -256,22 +279,19 @@ export default class Layers {
     if (this.isSelectedObjectChanged(this.oldselectedObject)) {
       this.stateChangeRequired = true;
     }
-    if (this.stateChangeRequired) this.createNewState();
+    if (this.stateChangeRequired && !this.oldselectedObject.isCropTool) {
+      this.createNewState();
+    }
     this.stateChangeRequired = false;
   }
 
   isSelectedObjectChanged(oldselectedObject) {
-    let x =  (
+    return (
       this.selectedObject.height != oldselectedObject.height ||
       this.selectedObject.width != oldselectedObject.width ||
       this.selectedObject.x != oldselectedObject.x ||
       this.selectedObject.y != oldselectedObject.y
     );
-    if(x){
-      console.log(JSON.stringify(oldselectedObject), JSON.stringify(this.selectedObject))
-      return x;
-    }
-
   }
 
   setRatio() {
@@ -297,11 +317,11 @@ export default class Layers {
     this.mouseY = ratioFixedSizeY(e.pageY - offsetY);
   }
 
-  addRectangle(x, y, width, height, fill) {
-    var rect = new Rectangle(x, y, width, height, fill);
+  addRectangle(x, y, width, height, fill, strokeStyle) {
+    var rect = new Rectangle(x, y, width, height, fill, strokeStyle);
     this.objects.push(rect);
     this.createNewState.bind(this)();
-    this.redraw.status = true;
+    this.redrawEverything();
   }
 
   addText(e) {
@@ -312,7 +332,7 @@ export default class Layers {
       textProperties[name] = value;
     }
     new addTextImage(textProperties, this.redraw, this.objects, this.canvas);
-    this.redraw.status = true;
+    this.redrawEverything();
     this.createNewState();
   }
 
@@ -323,7 +343,11 @@ export default class Layers {
     fr.readAsDataURL(file);
 
     function createImage() {
-      var imageLayer = new ImageObject(this.redraw, ratioFixedSizeX(200), ratioFixedSizeY(200));
+      var imageLayer = new ImageObject(
+        this.redraw,
+        ratioFixedSizeX(200),
+        ratioFixedSizeY(200)
+      );
       imageLayer.image.src = fr.result;
       this.objects.push(imageLayer);
       this.createNewState.bind(this)();
@@ -331,26 +355,27 @@ export default class Layers {
   }
 
   createNewState() {
-    console.log(this.changes)
     if (this.recentUndo) {
       for (let i = this.changes.length - 1; i > this.currentState; i--) {
         this.changes = this.changes.filter((obj) => obj !== this.changes[i]);
       }
     }
+    // console.log(JSON.stringify(this.changes), JSON.stringify(this.objects))
     this.currentState++;
     let newState = new ObjectState(this.objects);
     this.changes[this.currentState] = newState;
     this.recentUndo = false;
-    this.redraw.status = true;
+    this.redrawEverything();
   }
 
   undo() {
+    // console.log(JSON.stringify(this.changes))
     if (this.currentState > 0) {
       let previousState = this.changes[--this.currentState];
       let newObjectState = new ObjectState(previousState.objects);
       this.objects = newObjectState.objects;
-      this.redraw.status = true;
       this.recentUndo = true;
+      this.redrawEverything();
     }
   }
 
@@ -359,24 +384,47 @@ export default class Layers {
       let previousState = this.changes[++this.currentState];
       let newObjectState = new ObjectState(previousState.objects);
       this.objects = newObjectState.objects;
-      this.redraw.status = true;
+      this.redrawEverything();
     }
   }
 
   reset() {
     this.currentState = this.changes.length;
     this.objects = [];
-    this.redraw.status = true;
+    this.canvas.height = originalImageHeight.innerText;
+    this.canvas.width = originalImageWidth.innerText;
+    this.height = originalImageHeight.innerText;
+    this.width = originalImageWidth.innerText;
+    this.img = this.originalImage;
+
+    this.redrawEverything();
   }
 
   delete() {
-    this.objects = this.objects.filter((item) => item != this.selectedObject);
-    this.createNewState();
-    this.currentState = this.changes.length;
-    this.redraw.status = true;
+    if (this.selectedObject != -1 && !this.selectedObject.isCropTool) {
+      this.objects = this.objects.filter((item) => item != this.selectedObject);
+      this.createNewState();
+      this.currentState = this.changes.length - 1;
+      this.redrawEverything();
+    }
   }
 
-  resize(e){
+  draw(color, size) {
+    var isDrawing = false;
+    var painter = new Painter(color, size, this);
+    function startDrawing() {
+      if (this.selectedObject == -1) {
+        painter.startDrawing.bind(painter)();
+        isDrawing = true;
+      }
+    }
+    this.canvas.addEventListener("mousedown", startDrawing.bind(this));
+    this.canvas.addEventListener("mousemove", painter.draw.bind(painter));
+    this.canvas.addEventListener("mouseup", painter.stopDrawing.bind(painter));
+    this.canvas.addEventListener("mouseout", painter.stopDrawing.bind(painter));
+  }
+
+  resize(e) {
     e.preventDefault();
     var data = new FormData(imgResizeValue);
     let imageSize = {};
@@ -384,14 +432,12 @@ export default class Layers {
       imageSize[name] = value;
     }
     this.img = this.img;
-    this.redraw.status = true;
     this.height = imageSize.yValue;
     this.width = imageSize.xValue;
     this.canvas.height = this.height;
     this.canvas.width = this.width;
     this.setRatio();
-    this.redraw.status = true;
-    this.createNewState();
+    this.redrawEverything();
   }
 
   sendSelectedLayerBackward() {
@@ -402,7 +448,7 @@ export default class Layers {
         indexOfselectedObject,
         indexOfselectedObject - 1
       );
-      this.redraw.status = true;
+      this.redrawEverything();
     }
   }
 
@@ -414,7 +460,94 @@ export default class Layers {
         indexOfselectedObject,
         indexOfselectedObject + 1
       );
-      this.redraw.status = true;
+      this.redrawEverything();
     }
+  }
+
+  mask(maskImageObject) {
+    this.height = maskImageObject.height;
+    this.width = maskImageObject.width;
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
+    this.objects = this.objects.filter((obj) => obj !== maskImageObject);
+    let tempCanvas = document.createElement("canvas");
+    let tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width = this.width;
+    tempCanvas.height = this.height;
+    tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    tempCtx.globalAlpha = 0.8;
+    tempCtx.drawImage(
+      maskImageObject.image,
+      0,
+      0,
+      tempCanvas.width,
+      tempCanvas.height
+    );
+    tempCtx.globalCompositeOperation = "source-in";
+    tempCtx.drawImage(
+      this.img,
+      maskImageObject.x,
+      maskImageObject.y,
+      maskImageObject.width,
+      maskImageObject.height,
+      0,
+      0,
+      tempCanvas.width,
+      tempCanvas.height
+    );
+    var tempImage = new Image(maskImageObject.width, maskImageObject.height);
+    tempImage.src = tempCanvas.toDataURL();
+    tempImage.onload = () => {
+      this.img = tempImage;
+    }
+    this.reset();
+    this.setRatio();
+    this.redrawEverything();
+  }
+
+  crop(cropBox) {
+    let cropBoxClone = deepCloneObj(cropBox);
+    this.objects = this.objects.filter((obj) => obj != cropBox);
+    this.redraw.status = true;
+
+    let tempCanvas = document.createElement("canvas");
+    let tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.height = cropBoxClone.height;
+    tempCanvas.width = cropBoxClone.width;
+
+    setTimeout(() => {
+      let canvasImg = new Image();
+      canvasImg.width = this.width;
+      canvasImg.height = this.height;
+
+      canvasImg.src = this.canvas.toDataURL("image/jpeg", 0.9);
+      canvasImg.onload = () => {
+        tempCtx.drawImage(
+          canvasImg,
+          cropBoxClone.x,
+          cropBoxClone.y,
+          cropBoxClone.width,
+          cropBoxClone.height,
+          0,
+          0,
+          cropBoxClone.width,
+          cropBoxClone.height
+        );
+
+        this.img.src = tempCanvas.toDataURL("image/jpeg", 0.9);
+      };
+
+      this.height = cropBoxClone.height;
+      this.width = cropBoxClone.width;
+      this.canvas.height = this.height;
+      this.canvas.width = this.width;
+      this.setRatio();
+      this.redrawEverything();
+    }, 200);
+  }
+
+  redrawEverything() {
+    this.redraw.status = true;
   }
 }

@@ -8,7 +8,10 @@
       href="https://fonts.googleapis.com/css2?family=Megrim&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,300&display=swap"
+      rel="stylesheet"
+    />
 
     <script
       src="https://kit.fontawesome.com/828a3930be.js"
@@ -16,6 +19,7 @@
     ></script>
 
     <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
     <link rel="stylesheet" href="./css/index.css" />
 
     <title>Image editor</title>
@@ -48,7 +52,7 @@
                 <li id="undo" class="tool">
                   <i class="fas fa-undo"></i>
                   <span class="tool-info">Undo</span>
-                 </li>
+                </li>
                 <li id="redo" class="tool">
                   <i class="fas fa-redo"></i>
                   <span class="tool-info">Redo</span>
@@ -62,7 +66,7 @@
                   <span class="tool-info">Delete</span>
                 </li>
               </div>
-              <li data-tab-target="#crop" class="tool">
+              <li id="crop" data-tab-target="#cropTool" class="tool">
                 <i class="fas fa-crop-alt"></i>
                 <span class="tool-info">Crop</span>
               </li>
@@ -78,7 +82,7 @@
                 <img src="./images/flip.svg" alt="" />
                 <span class="tool-info">Flip</span>
               </li>
-              <li data-tab-target="#draw" class="tool">
+              <li data-tab-target="#drawTool" class="tool" id="defaultDraw">
                 <i class="fas fa-pencil-alt"></i>
                 <span class="tool-info">Draw</span>
               </li>
@@ -118,15 +122,41 @@
             </div>
           </div>
           <div class="right">
-            <div class="tab-content">
-              <div id="resize" data-tab-content class="active">
+            <!-- <div class="tab-content"> -->
+              <div id="cropTool" data-tab-content class="active">
                 <div class="tool-options-wrapper">
-                  <form action="#" id = "imgResizeValue">
-                    <label for="valX">Enter x: </label>
-                    <input name = "xValue" id = "valX" type="text" />
-                    <br><br>
-                    <label for="valY">Enter y:</label>
-                    <input name = "yValue" id="valY" type="text" /><br />
+                  <form action="#" id="applyCrop">
+                    <button type="submit" class="apply-button">Apply</button>
+                    <button type="reset" class="apply-button red-button">Cancel</button>
+                  </form>
+                </div>
+              </div>
+
+              <div id="resize" data-tab-content>
+                <div class="tool-options-wrapper">
+                  <div class="original-image-info">
+                    <div class="text">Original Image Info</div>
+                    <span id="originalImageWidth"></span>px X
+                    <span id="originalImageHeight"></span>px
+                  </div>
+                  <form action="#" id="imgResizeValue">
+                    <label for="resizeValueX">Enter x(px): </label>
+                    <input name="xValue" id="resizeValueX" type="number" />
+                    <br /><br />
+                    <label for="resizeValueY">Enter y(px):</label>
+                    <input
+                      name="yValue"
+                      id="resizeValueY"
+                      type="number"
+                    /><br />
+                    <input
+                      type="checkbox"
+                      id="preserveAspectRatio"
+                      name="preserveAspectRatio"
+                    />
+                    <label for="preserveAspectRatio"
+                      >Preserve aspect ratio</label
+                    >
                     <button type="submit" class="apply-button">Apply</button>
                   </form>
                 </div>
@@ -148,13 +178,18 @@
                   <div id="flipVertical">Flip Vertical</div>
                 </div>
               </div>
-              <div id="draw" data-tab-content>
+              <div id="drawTool" data-tab-content>
                 <div class="tool-options-wrapper">
-                  <div class="color-option red"></div>
-                  <div class="color-option blue"></div>
-                  <div class="color-option green"></div>
-                  <input type="color" class="color-picker" />
-                  <input type="range" min="1" max="50" />
+                  <form action="" id="draw">
+                    Color:
+                    <input
+                      name="color"
+                      type="color"
+                      class="color-picker"
+                    /><br />
+                    Stroke Size:
+                    <input name="size" type="range" min="1" max="50" />
+                  </form>
                 </div>
               </div>
               <div id="shape" data-tab-content>
@@ -162,30 +197,27 @@
                   <div id="newRectangle">New Rectangle</div>
                   <div id="newTriangle">Triangle</div>
                   <div id="newCircle">Circle</div>
-                  <div class="white-btn">
                     <label for="newImage" class="cursor-pointer"
-                      >New Image Layer</label>
+                      >New Image Layer</label
+                    >
                     <input
                       type="file"
                       id="newImage"
                       class="hidden"
                       accept=".jpg, .jpeg, .png"
                     />
-                  </div>
                   <div id="fillColor">Fill</div>
                   <div id="stroke">Stroke Color</div>
                 </div>
               </div>
               <div id="icons" data-tab-content>
-                <div class="tool-options-wrapper">
-                  Icons here
-                </div>
+                <div class="tool-options-wrapper">Icons here</div>
               </div>
               <div id="text" data-tab-content>
                 <div class="tool-options-wrapper">
                   <form id="newText">
                     Text: <input name="text" id="inputText" type="text" /><br />
-                    <div>Color: </div>
+                    <div>Color:</div>
                     <input
                       type="color"
                       name="color"
@@ -216,8 +248,18 @@
               </div>
               <div id="mask" data-tab-content>
                 <div class="tool-options-wrapper">
-                  <h1>mask tab</h1>
-                  <p>This is mask tab</p>
+                  <div id="loadedMaskImage"></div>
+                  <form action="#" id="maskImage">
+                    <label for="maskImageSelector" class="cursor-pointer">Load mask image</label>
+                    <br>
+                    <input
+                    type="file"
+                    id="maskImageSelector"
+                    class="hidden"
+                    accept=".jpg, .jpeg, .png"
+                  />
+                  <button type="submit" class="apply-button">Apply</button>
+                  </form>
                 </div>
               </div>
               <div id="frames" data-tab-content>
@@ -226,11 +268,11 @@
                   <p>This is frames tab</p>
                 </div>
               </div>
-            </div>
+            <!-- </div> -->
           </div>
         </div>
         <div class="canvas-wrapper">
-          <canvas id="drawScreen"></canvas>
+          <canvas class="canvas" id="drawScreen"></canvas>
         </div>
       </div>
     </div>
