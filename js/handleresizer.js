@@ -1,14 +1,18 @@
-import { BOX_SIZE, BOX_COLOR } from "./constants.js";
-function resizer(ctx, selectedObject, selectionHandles) {
+import { BOX_SIZE, BOX_COLOR } from './constants.js';
+
+/**
+ * This method positions the resize handles correctly 
+ * when layer is being resized
+ * @param {context} ctx Canvas Context
+ * @param {object} selectedObject Selected layer object
+ * @param {object} selectionHandles Selected layer handle
+ */
+function positionResizeHandlers(ctx, selectedObject, selectionHandles) {
   if (selectedObject === this) {
     // 0  1  2
     // 3     4
     // 5  6  7
-    ctx.strokeStyle = "transparent";
-
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
-
-    var half = BOX_SIZE / 2;
+    const half = BOX_SIZE / 2;
 
     selectionHandles[0].x = this.x - half;
     selectionHandles[0].y = this.y - half;
@@ -35,12 +39,12 @@ function resizer(ctx, selectedObject, selectionHandles) {
     selectionHandles[7].y = this.y + this.height - half;
 
     ctx.fillStyle = BOX_COLOR;
-    for (var i = 0; i < 8; i++) {
-      var selectionHandle = selectionHandles[i];
+    for (let i = 0; i < 8; i += 1) {
+      const selectionHandle = selectionHandles[i];
 
       ctx.fillRect(selectionHandle.x, selectionHandle.y, BOX_SIZE, BOX_SIZE);
     }
   }
 }
 
-export { resizer };
+export { positionResizeHandlers };

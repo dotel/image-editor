@@ -1,6 +1,11 @@
-import { ratio, ratioFixedSizeX, ratioFixedSizeY } from "./utilities.js";
-import { resizer } from "./handleresizer.js";
-
+import { ratioFixedSizeX, ratioFixedSizeY } from './utilities.js';
+import { positionResizeHandlers } from './handleresizer.js';
+/**
+ * Creates a new instance of ImageObject
+ * @param {object} redraw
+ * @param {number} height
+ * @param {number} width
+ */
 export default class ImageObject {
   constructor(redraw, width, height) {
     this.x = 0;
@@ -11,10 +16,11 @@ export default class ImageObject {
     redraw.status = true;
     this.isDrawing;
   }
+
   draw(context, selectedObject, selectionHandles) {
     context.drawImage(this.image, this.x, this.y, this.width, this.height);
-    if(!this.isDrawing){
-      resizer.bind(this)(context, selectedObject, selectionHandles);
+    if (!this.isDrawing) {
+      positionResizeHandlers.bind(this)(context, selectedObject, selectionHandles);
     }
   }
 }

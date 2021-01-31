@@ -123,151 +123,145 @@
           </div>
           <div class="right">
             <!-- <div class="tab-content"> -->
-              <div id="cropTool" data-tab-content class="active">
-                <div class="tool-options-wrapper">
-                  <form action="#" id="applyCrop">
-                    <button type="submit" class="apply-button">Apply</button>
-                    <button type="reset" class="apply-button red-button">Cancel</button>
-                  </form>
-                </div>
+            <div id="cropTool" data-tab-content class="active">
+              <div class="tool-options-wrapper">
+                <form action="#" id="applyCrop">
+                  <button type="submit" class="apply-button">Apply</button>
+                  <button type="reset" class="apply-button red-button">
+                    Cancel
+                  </button>
+                </form>
               </div>
+            </div>
 
-              <div id="resize" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <div class="original-image-info">
-                    <div class="text">Original Image Info</div>
-                    <span id="originalImageWidth"></span>px X
-                    <span id="originalImageHeight"></span>px
-                  </div>
-                  <form action="#" id="imgResizeValue">
-                    <label for="resizeValueX">Enter x(px): </label>
-                    <input name="xValue" id="resizeValueX" type="number" />
-                    <br /><br />
-                    <label for="resizeValueY">Enter y(px):</label>
-                    <input
-                      name="yValue"
-                      id="resizeValueY"
-                      type="number"
-                    /><br />
-                    <input
-                      type="checkbox"
-                      id="preserveAspectRatio"
-                      name="preserveAspectRatio"
-                    />
-                    <label for="preserveAspectRatio"
-                      >Preserve aspect ratio</label
-                    >
-                    <button type="submit" class="apply-button">Apply</button>
-                  </form>
+            <div id="resize" data-tab-content>
+              <div class="tool-options-wrapper">
+                <div class="original-image-info">
+                  <div class="text">Original Image Info</div>
+                  <span id="originalImageWidth"></span>px X
+                  <span id="originalImageHeight"></span>px
                 </div>
+                <form action="#" id="imgResizeValue">
+                  <label for="resizeValueX">Enter x(px): </label>
+                  <input name="xValue" id="resizeValueX" type="number" />
+                  <br /><br />
+                  <label for="resizeValueY">Enter y(px):</label>
+                  <input name="yValue" id="resizeValueY" type="number" /><br />
+                  <input
+                    type="checkbox"
+                    id="preserveAspectRatio"
+                    name="preserveAspectRatio"
+                  />
+                  <label for="preserveAspectRatio">Preserve aspect ratio</label>
+                  <button type="submit" class="apply-button">Apply</button>
+                </form>
               </div>
-              <div id="rotate" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <div class="div" id="rotateLeft">Rotate Left</div>
-                  <div class="div" id="rotateRight">Rotate right</div>
-                  <form action="#">
-                    <label for="rotateAngle">Angle:</label>
-                    <input type="text" id="rotateAngle" /><br />
-                    <button type="submit" class="apply-button">Apply</button>
-                  </form>
-                </div>
+            </div>
+            <div id="rotate" data-tab-content>
+              <div class="tool-options-wrapper">
+                <div class="div" id="rotateLeft">Rotate Left</div>
+                <div class="div" id="rotateRight">Rotate right</div>
+                <form action="#">
+                  <label for="rotateAngle">Angle:</label>
+                  <input type="text" id="rotateAngle" /><br />
+                  <button type="submit" class="apply-button">Apply</button>
+                </form>
               </div>
-              <div id="flip" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <div id="flipHorizontal">Flip Horizontal</div>
-                  <div id="flipVertical">Flip Vertical</div>
-                </div>
+            </div>
+            <div id="flip" data-tab-content>
+              <div class="tool-options-wrapper">
+                <div id="flipHorizontal">Flip Horizontal</div>
+                <div id="flipVertical">Flip Vertical</div>
               </div>
-              <div id="drawTool" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <form action="" id="draw">
-                    Color:
-                    <input
-                      name="color"
-                      type="color"
-                      class="color-picker"
-                    /><br />
-                    Stroke Size:
-                    <input name="size" type="range" min="1" max="50" />
-                  </form>
-                </div>
+            </div>
+            <div id="drawTool" data-tab-content>
+              <div class="tool-options-wrapper">
+                <form action="" id="draw">
+                  Color:
+                  <input name="color" type="color" class="color-picker" /><br />
+                  Stroke Size:
+                  <input name="size" type="range" min="1" max="50" />
+                </form>
               </div>
-              <div id="shape" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <div id="newRectangle">New Rectangle</div>
-                  <div id="newTriangle">Triangle</div>
-                  <div id="newCircle">Circle</div>
-                    <label for="newImage" class="cursor-pointer"
-                      >New Image Layer</label
-                    >
-                    <input
-                      type="file"
-                      id="newImage"
-                      class="hidden"
-                      accept=".jpg, .jpeg, .png"
-                    />
-                  <div id="fillColor">Fill</div>
-                  <div id="stroke">Stroke Color</div>
-                </div>
+            </div>
+            <div id="shape" data-tab-content>
+              <div class="tool-options-wrapper">
+                <div id="newRectangle">New Rectangle</div>
+                <div id="newTriangle">Triangle</div>
+                <div id="newCircle">Circle</div>
+                <label for="newImage" class="cursor-pointer"
+                  >New Image Layer</label
+                >
+                <input
+                  type="file"
+                  id="newImage"
+                  class="hidden"
+                  accept=".jpg, .jpeg, .png"
+                />
+                <div id="fillColor">Fill</div>
+                <div id="stroke">Stroke Color</div>
               </div>
-              <div id="icons" data-tab-content>
-                <div class="tool-options-wrapper">Icons here</div>
+            </div>
+            <div id="icons" data-tab-content>
+              <div class="tool-options-wrapper">Icons here</div>
+            </div>
+            <div id="text" data-tab-content>
+              <div class="tool-options-wrapper">
+                <form id="newText">
+                  Text: <input name="text" id="inputText" type="text" /><br />
+                  <div>Color:</div>
+                  <input
+                    type="color"
+                    name="color"
+                    class="color-picker"
+                    value="#ff4040"
+                  />
+                  <div>Size</div>
+                  <input
+                    name="size"
+                    type="range"
+                    min="10"
+                    max="50"
+                    value="14"
+                    id="colorPicked"
+                    onchange="this.nextElementSibling.value=this.value"
+                  />
+                  <input
+                    type="number"
+                    id="fontSize"
+                    min="10"
+                    max="50"
+                    value="14"
+                    onchange="this.previousElementSibling.value=this.value"
+                  />
+                  <button type="submit" class="apply-button">Apply</button>
+                </form>
               </div>
-              <div id="text" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <form id="newText">
-                    Text: <input name="text" id="inputText" type="text" /><br />
-                    <div>Color:</div>
-                    <input
-                      type="color"
-                      name="color"
-                      class="color-picker"
-                      value="#ff4040"
-                    />
-                    <div>Size</div>
-                    <input
-                      name="size"
-                      type="range"
-                      min="10"
-                      max="50"
-                      value="14"
-                      id="colorPicked"
-                      onchange="this.nextElementSibling.value=this.value"
-                    />
-                    <input
-                      type="number"
-                      id="fontSize"
-                      min="10"
-                      max="50"
-                      value="14"
-                      onchange="this.previousElementSibling.value=this.value"
-                    />
-                    <button type="submit" class="apply-button">Apply</button>
-                  </form>
-                </div>
-              </div>
-              <div id="mask" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <div id="loadedMaskImage"></div>
-                  <form action="#" id="maskImage">
-                    <label for="maskImageSelector" class="cursor-pointer">Load mask image</label>
-                    <br>
-                    <input
+            </div>
+            <div id="mask" data-tab-content>
+              <div class="tool-options-wrapper">
+                <div id="loadedMaskImage"></div>
+                <form action="#" id="maskImage">
+                  <label for="maskImageSelector" class="cursor-pointer"
+                    >Load mask image</label
+                  >
+                  <br />
+                  <input
                     type="file"
                     id="maskImageSelector"
                     class="hidden"
                     accept=".jpg, .jpeg, .png"
                   />
                   <button type="submit" class="apply-button">Apply</button>
-                  </form>
-                </div>
+                </form>
               </div>
-              <div id="frames" data-tab-content>
-                <div class="tool-options-wrapper">
-                  <h1>frames tab</h1>
-                  <p>This is frames tab</p>
-                </div>
+            </div>
+            <div id="frames" data-tab-content>
+              <div class="tool-options-wrapper">
+                <h1>frames tab</h1>
+                <p>This is frames tab</p>
               </div>
+            </div>
             <!-- </div> -->
           </div>
         </div>
