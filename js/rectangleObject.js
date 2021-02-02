@@ -2,6 +2,7 @@ import { positionResizeHandlers } from './handleresizer.js';
 
 export default class Rectangle {
   constructor(
+    layers,
     x,
     y,
     width,
@@ -10,6 +11,7 @@ export default class Rectangle {
     strokeStyle = 'transparent',
     isCropTool,
   ) {
+    this.layers = layers;
     this.x = x;
     this.y = y;
     this.width = width;
@@ -34,6 +36,6 @@ export default class Rectangle {
     context.lineWidth = 5;
     context.strokeRect(this.x, this.y, this.width, this.height);
 
-    positionResizeHandlers.bind(this)(context, selectedObject, selectionHandles);
+    positionResizeHandlers.bind(this)(this.layers, selectedObject, selectionHandles);
   }
 }

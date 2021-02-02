@@ -1,3 +1,6 @@
+.canvas{
+  border: 2px solid white; /* for testing purpose only */
+}
 
 .image-info {
   font-size: 14px;
@@ -87,7 +90,11 @@
 
 .active[data-tab-content] {
   display: block;
+  height: 100%;
+  position: relative;
 }
+
+
 
 .tabs {
   justify-content: space-around;
@@ -135,11 +142,12 @@
 
 .tool-options-wrapper {
   position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
+  top: 50%;
+  left: 15%;
+  transform: translateY(-50%);
   width: 100%;
-  padding-left: 60px;
+  /* padding-left: 60px; */
+  /* height: 100%; */
 }
 
 .tool-options-wrapper input {
@@ -180,25 +188,6 @@ i.fab,
   cursor: pointer;
 }
 
-.color-option {
-  height: 30px;
-  width: 30px;
-  display: inline-block;
-  border-radius: 50%;
-  border: 2px solid white;
-  cursor: pointer;
-  margin: 0 10px;
-}
-.color-option.red {
-  background-color: #f00;
-}
-.color-option.green {
-  background-color: #0f0;
-}
-
-.color-option.blue {
-  background-color: #00f;
-}
 
 .color-picker {
   width: 30px;
@@ -208,4 +197,66 @@ i.fab,
 
 .hidden {
   display: none;
+}
+
+.clearfix:after { 
+  content: "."; 
+  visibility: hidden; 
+  display: block; 
+  height: 0; 
+  clear: both;
+}
+
+::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5c5ccc;
+  -webkit-border-radius: 1ex;
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+::-webkit-scrollbar-corner {
+  background: #000;
+}
+
+.frames, .stickers{
+  list-style: none;
+  scrollbar-color: dark;
+  overflow-y: scroll;
+  height: 900px;
+  width: 80%;
+}
+
+.frames img{
+  width: 150px;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+#fontSelect{
+  font-size: 20px;
+  width: 150px;
+}
+
+.text-preview{
+  color: black;
+  font-family: 'Montez';
+  font-size: 40px;
+  line-height: 4.5rem; /* supports largest font size allowed */
+  width: calc(200px);
+}
+/* 
+.disabled-button{
+  pointer-events: none;
+} */
+
+.stickers img{
+  width: 100px;
+  padding: 10px 0;
+  cursor: pointer;
+  margin-left: 20px;
 }

@@ -11,7 +11,8 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,300&display=swap"
       rel="stylesheet"
-    />
+    /> 
+    <link href='https://fonts.googleapis.com/css?family=Montez|Lobster|Josefin+Sans|Shadows+Into+Light|Pacifico|Amatic+SC:700|Orbitron:400,900|Rokkitt|Righteous|Dancing+Script:700|Bangers|Chewy|Sigmar+One|Architects+Daughter|Abril+Fatface|Covered+By+Your+Grace|Kaushan+Script|Gloria+Hallelujah|Satisfy|Lobster+Two:700|Comfortaa:700|Cinzel|Courgette' rel='stylesheet' type='text/css'>
 
     <script
       src="https://kit.fontawesome.com/828a3930be.js"
@@ -49,68 +50,64 @@
           <div class="left">
             <ul class="tools">
               <div class="layer-actions">
-                <li id="undo" class="tool">
+                <li id="undoTool" class="tool">
                   <i class="fas fa-undo"></i>
                   <span class="tool-info">Undo</span>
                 </li>
-                <li id="redo" class="tool">
+                <li id="redoTool" class="tool">
                   <i class="fas fa-redo"></i>
                   <span class="tool-info">Redo</span>
                 </li>
-                <li id="reset" class="tool">
+                <li id="resetTool" class="tool">
                   <img src="./images/reset.svg" alt="" />
                   <span class="tool-info">Reset</span>
                 </li>
-                <li id="delete" class="active tool">
+                <li id="deleteTool" class="tool">
                   <i class="fas fa-trash"></i>
                   <span class="tool-info">Delete</span>
                 </li>
               </div>
-              <li id="crop" data-tab-target="#cropTool" class="tool">
+              <li id="cropTool" data-tab-target="#crop" class="tool">
                 <i class="fas fa-crop-alt"></i>
                 <span class="tool-info">Crop</span>
               </li>
-              <li data-tab-target="#resize" class="tool">
+              <li id="resizeTool" data-tab-target="#resize" class="tool">
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span class="tool-info">Resize</span>
               </li>
-              <li data-tab-target="#rotate" class="tool">
+              <li id="rotateTool" data-tab-target="#rotate" class="tool">
                 <img src="./images/rotate.svg" alt="" />
                 <span class="tool-info">Rotate</span>
               </li>
-              <li data-tab-target="#flip" class="tool">
-                <img src="./images/flip.svg" alt="" />
-                <span class="tool-info">Flip</span>
-              </li>
-              <li data-tab-target="#drawTool" class="tool" id="defaultDraw">
+              <li id="drawTool" data-tab-target="#draw" class="tool">
                 <i class="fas fa-pencil-alt"></i>
                 <span class="tool-info">Draw</span>
               </li>
-              <li data-tab-target="#shape" class="tool">
+              <li id = "shapeTool" data-tab-target="#shape" class="tool">
                 <i class="fas fa-shapes"></i>
                 <span class="tool-info">Shapes</span>
               </li>
-              <li data-tab-target="#icons" class="tool">
+              <li id="stickersTool" data-tab-target="#stickers" class="tool">
                 <i class="fas fa-star"></i>
-                <span class="tool-info">Icons</span>
+                <span class="tool-info">Stickers</span>
               </li>
-              <li data-tab-target="#text" class="tool">
+              <li id="textTool" data-tab-target="#text" class="tool">
                 <i class="fas fa-font"></i>
                 <span class="tool-info">Text</span>
               </li>
-              <li data-tab-target="#mask" class="tool">
+              <li id="maskTool" data-tab-target="#mask" class="tool">
                 <img src="./images/mask.svg" alt="" />
                 <span class="tool-info">Mask</span>
               </li>
-              <li data-tab-target="#frames" class="tool">
+              <li id="framesTool" data-tab-target="#frames" class="tool">
                 <img src="./images/frame.svg" alt="" />
                 <span class="tool-info">Frames</span>
               </li>
-              <li id="sendLayerBackward" class="tool">
+              <li id="sendLayerBackwardTool" class="tool">
                 <img src="./images/send-backward.svg" alt="" />
                 <span class="tool-info">Send backward</span>
               </li>
-              <li id="sendLayerForward" class="tool">
+              <li id="sendLayerForwardTool" class="tool">
                 <img src="./images/bring-forward.svg" alt="" />
                 <span class="tool-info">Bring forward</span>
               </li>
@@ -122,8 +119,7 @@
             </div>
           </div>
           <div class="right">
-            <!-- <div class="tab-content"> -->
-            <div id="cropTool" data-tab-content class="active">
+            <div id="crop" data-tab-content>
               <div class="tool-options-wrapper">
                 <form action="#" id="applyCrop">
                   <button type="submit" class="apply-button">Apply</button>
@@ -149,6 +145,7 @@
                   <input name="yValue" id="resizeValueY" type="number" /><br />
                   <input
                     type="checkbox"
+                    checked
                     id="preserveAspectRatio"
                     name="preserveAspectRatio"
                   />
@@ -157,7 +154,7 @@
                 </form>
               </div>
             </div>
-            <div id="rotate" data-tab-content>
+            <div id="rotate" data-tab-content class="active">
               <div class="tool-options-wrapper">
                 <div class="div" id="rotateLeft">Rotate Left</div>
                 <div class="div" id="rotateRight">Rotate right</div>
@@ -168,19 +165,14 @@
                 </form>
               </div>
             </div>
-            <div id="flip" data-tab-content>
+            
+            <div id="draw" data-tab-content>
               <div class="tool-options-wrapper">
-                <div id="flipHorizontal">Flip Horizontal</div>
-                <div id="flipVertical">Flip Vertical</div>
-              </div>
-            </div>
-            <div id="drawTool" data-tab-content>
-              <div class="tool-options-wrapper">
-                <form action="" id="draw">
+                <form action="" id="drawProperties">
                   Color:
                   <input name="color" type="color" class="color-picker" /><br />
                   Stroke Size:
-                  <input name="size" type="range" min="1" max="50" />
+                  <input name="size" type="range" min="1" max="30" />
                 </form>
               </div>
             </div>
@@ -202,40 +194,57 @@
                 <div id="stroke">Stroke Color</div>
               </div>
             </div>
-            <div id="icons" data-tab-content>
-              <div class="tool-options-wrapper">Icons here</div>
+            <div id="stickers" data-tab-content>
+              <div class="tool-options-wrapper">
+                <ul class="stickers">
+                  <li><img loading = "lazy" src="./images/stickers/dontpanic.png" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/02-bell.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/06-balloons.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/09-confetti.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/11-hat.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/50-glass-tower.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/48-bow-tie.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/10-new-year purposes.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/15-underwear.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/18-new-year outfit.svg" alt=""></li>
+                  <li><img loading = "lazy" src="./images/stickers/lineal-color/44-fireworks.svg" alt=""></li>
+                </ul>
+                </div>
             </div>
             <div id="text" data-tab-content>
               <div class="tool-options-wrapper">
                 <form id="newText">
+                  Font: <select id= "fontSelect" name="fontFamily"></select> <br>
                   Text: <input name="text" id="inputText" type="text" /><br />
                   <div>Color:</div>
                   <input
                     type="color"
                     name="color"
+                    value="#000000"
                     class="color-picker"
-                    value="#ff4040"
+                    id="inputTextColorPicked"
                   />
                   <div>Size</div>
                   <input
                     name="size"
                     type="range"
                     min="10"
-                    max="50"
-                    value="14"
-                    id="colorPicked"
+                    max="90"
+                    value="40"
+                    id="inputTextFontSize"
                     onchange="this.nextElementSibling.value=this.value"
                   />
                   <input
                     type="number"
-                    id="fontSize"
                     min="10"
-                    max="50"
-                    value="14"
+                    max="90"
+                    value="40"
                     onchange="this.previousElementSibling.value=this.value"
                   />
                   <button type="submit" class="apply-button">Apply</button>
                 </form>
+                Preview
+                <p id= "textPreview" class="text-preview">Write something in text box</p>
               </div>
             </div>
             <div id="mask" data-tab-content>
@@ -258,11 +267,15 @@
             </div>
             <div id="frames" data-tab-content>
               <div class="tool-options-wrapper">
-                <h1>frames tab</h1>
-                <p>This is frames tab</p>
+                <ul class="frames">
+                  <li><img loading = "lazy" src="./images/borders/border-img-1.png" alt=""></li>
+                  <li><img loading = "lazy" src="./images/borders/border-img-2.png" alt=""></li>
+                  <li><img loading = "lazy" src="./images/borders/border-img-3.png" alt=""></li>
+                  <li><img loading = "lazy" src="./images/borders/border-img-4.png" alt=""></li>
+                  <li><img loading = "lazy" src="./images/borders/border-img-5.png" alt=""></li> 
+                </ul>
               </div>
             </div>
-            <!-- </div> -->
           </div>
         </div>
         <div class="canvas-wrapper">

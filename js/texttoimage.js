@@ -8,14 +8,16 @@ import ImageObject from './imageobject.js';
 function addTextImage(textProperties, redraw) {
   const { text } = textProperties;
   const { size } = textProperties;
+  const {fontFamily} = textProperties;
   const tempCanvas = document.createElement('canvas');
   const tempCtx = tempCanvas.getContext('2d');
-  tempCtx.font = `${size}px Arial`;
-
+  
+  tempCtx.font = `${size}px ${fontFamily}`;
   tempCanvas.width = tempCtx.measureText(text).width;
   tempCanvas.height = size;
+  
+  tempCtx.font = `${size - 3}px ${fontFamily}`; // -3 because some fonts have very long g's and tend to crop out
 
-  tempCtx.font = `${size}px Arial`;
   tempCtx.fillStyle = textProperties.color;
   tempCtx.textAlign = 'left';
   tempCtx.textBaseline = 'top';

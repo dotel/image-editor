@@ -1,9 +1,3 @@
-// Ratio by which every layer should be resized when canvas is resized
-const ratio = {
-  xratio: null,
-  yratio: null,
-};
-
 // Clears the canvas context
 function clearContext(ctx, width, height) {
   ctx.clearRect(0, 0, width, height);
@@ -20,23 +14,6 @@ function angleToRadian(deg) {
   return (Math.PI * deg) / 180;
 }
 
-/**
- * 
- * @param {number} x Width or x value
- * @returns {number} Adjusted x value
- */
-function ratioFixedSizeX(x) {
-  return x / ratio.xratio;
-}
-
-/**
- * 
- * @param {number} y Height or y value
- * @returns {number} Adjusted y value
- */
-function ratioFixedSizeY(y) {
-  return y / ratio.yratio;
-}
 
 // Returns a clone of the object
 function deepCloneObj(object) {
@@ -55,13 +32,20 @@ function swapArrayElement(arr, i, j) {
   arr[j] = temp;
 }
 
+function getInitialDrawproperties(){
+  const data = new FormData(drawProperties);
+  const drawOptions = {};
+  for (const [name, value] of data) {
+    drawOptions[name] = value;
+  }
+  return drawOptions;
+}
+
 export {
   clearContext,
   randomColor,
   angleToRadian,
-  ratioFixedSizeX,
-  ratioFixedSizeY,
   deepCloneObj,
   swapArrayElement,
-  ratio,
+  getInitialDrawproperties
 };

@@ -1,26 +1,32 @@
-import { ratioFixedSizeX, ratioFixedSizeY } from './utilities.js';
 import { positionResizeHandlers } from './handleresizer.js';
 /**
  * Creates a new instance of ImageObject
- * @param {object} redraw
+ * @param {object} layers layers object
  * @param {number} height
  * @param {number} width
  */
 export default class ImageObject {
-  constructor(redraw, width, height) {
+  constructor(layers, width, height, isDrawing) {
     this.x = 0;
     this.y = 0;
-    this.width = ratioFixedSizeX(width);
-    this.height = ratioFixedSizeY(height);
+    if(isDrawing){
+      this.width = layers.ratioFixedSizeX(width);
+      this.height = layers.ratioFixedSizeY(height);
+    } else{
+      this.width = width;
+      this.height = height;
+    }
+
     this.image = new Image();
-    redraw.status = true;
-    this.isDrawing;
+    layers.redraw.status = true;
+    this.layers = layers;
+    this.isDrawing = isDrawing;
   }
 
   draw(context, selectedObject, selectionHandles) {
     context.drawImage(this.image, this.x, this.y, this.width, this.height);
     if (!this.isDrawing) {
-      positionResizeHandlers.bind(this)(context, selectedObject, selectionHandles);
+      positionResizeHandlers.bind(this)(this.layers, selectedObject, selectionHandles);
     }
   }
 }

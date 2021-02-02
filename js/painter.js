@@ -19,37 +19,42 @@ export default class Painter {
   }
 
   startDrawing() {
-    this.canvas.style.cursor = 'crosshair';
     this.isDrawing = true;
     this.tempCtx.beginPath();
+    this.ctx.beginPath();
   }
 
   draw(e) {
     if (this.isDrawing) {
-      this.layers.redraw.status = true;
       this.tempCtx.lineTo(
         e.clientX - this.canvas.getBoundingClientRect().left,
         e.clientY - this.canvas.getBoundingClientRect().top,
-      );
-      this.tempCtx.strokeStyle = this.fillColor;
+        );
+        this.ctx.lineTo(
+          this.layers.ratioFixedSizeX(e.clientX - this.canvas.getBoundingClientRect().left),
+          this.layers.ratioFixedSizeY(e.clientY - this.canvas.getBoundingClientRect().top),
+          );
       this.tempCtx.lineWidth = this.strokeSize;
-      this.tempCtx.lineCap = 'round';
-      this.tempCtx.lineJoin = 'round';
-      this.tempCtx.stroke();
-      this.ctx.strokeStyle = this.fillColor;
-      this.ctx.lineWidth = this.strokeSize;
-      this.ctx.lineCap = 'round';
-      this.ctx.lineJoin = 'round';
-      this.ctx.stroke();
+      this.ctx.lineWidth = this.layers.ratioFixedSizeX(this.strokeSize);
+      this.drawOnGivenContext(this.tempCtx)
+      this.drawOnGivenContext(this.ctx);
     }
+  }
+  drawOnGivenContext(ctx){
+    ctx.strokeStyle = this.fillColor;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
   }
 
   stopDrawing() {
     if (this.isDrawing) {
+      this.isDrawing = false;
       this.tempCtx.stroke();
       this.tempCtx.closePath();
-      this.isDrawing = false;
-      this.toImage();
+      this.ctx.stroke();
+      this.ctx.closePath();
+      this.drawingToImage();
       this.tempCtx.clearRect(
         0,
         0,
@@ -59,14 +64,14 @@ export default class Painter {
     }
   }
 
-  toImage() {
+  drawingToImage() {
     const paintImage = new ImageObject(
-      this.layers.redraw,
+      this.layers,
       this.tempCanvas.width,
       this.tempCanvas.height,
+      true
     );
     paintImage.image.src = this.tempCanvas.toDataURL();
-    paintImage.isDrawing = true;
     this.layers.objects.push(paintImage);
     this.layers.createNewState();
   }
