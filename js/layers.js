@@ -10,12 +10,12 @@ import {
 import Rectangle from './rectangleObject.js';
 import ImageObject from './imageobject.js';
 import {
-  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER,
+  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE
 } from './constants.js';
 import { addTextImage } from './texttoimage.js';
 import ObjectState from './objectstates.js';
 import Painter from './painter.js';
-import { handleNewLayersAddition } from './newlayerhandler.js';
+import {createCircleImage} from './circleToImage.js'
 
 let painter;
 const maindrawInterval = {};
@@ -53,8 +53,6 @@ export default class Layers {
     this.canvas.onmousedown = this.handleMouseDown.bind(this);
     this.canvas.onmousemove = this.handleMouseMove.bind(this);
     this.canvas.onmouseup = this.handleMouseUp.bind(this);
-
-    handleNewLayersAddition(this);
 
     this.image.onload = () => {
       // Saves the original height/width of the image on first load only
@@ -317,6 +315,13 @@ export default class Layers {
     this.objects.push(rect);
     this.createNewState.bind(this)();
     this.redrawEverything();
+  }
+
+  addCircle(e, fill){
+    const circleImage = createCircleImage(DEFAULT_CIRCLE.x, DEFAULT_CIRCLE.y, 100, this, fill);
+    this.objects.push(circleImage);
+    this.redrawEverything();
+    this.createNewState();
   }
 
   addText(e) {

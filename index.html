@@ -80,7 +80,7 @@
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span class="tool-info">Resize</span>
               </li>
-              <li id="rotateTool" data-tab-target="#rotate" class="tool active">
+              <li id="rotateTool" data-tab-target="#rotate" class="tool">
                 <img src="./images/rotate.png" alt="" />
 
                 <span class="tool-info">Rotate</span>
@@ -159,10 +159,14 @@
                 </form>
               </div>
             </div>
-            <div id="rotate" data-tab-content class="active">
+            <div id="rotate" data-tab-content>
               <div class="tool-options-wrapper">
-                <div class="div" id="rotateLeft">Rotate Left</div>
-                <div class="div" id="rotateRight">Rotate right</div>
+                <div class="apply-button noselect" id="rotateLeft">
+                  Rotate Left
+                </div>
+                <div class="apply-button noselect" id="rotateRight">
+                  Rotate right
+                </div>
               </div>
             </div>
 
@@ -176,13 +180,12 @@
                 </form>
               </div>
             </div>
-            <div id="shape" data-tab-content>
+            <div id="shape" data-tab-content class="active">
               <div class="tool-options-wrapper">
-                <div id="newRectangle">New Rectangle</div>
-                <div id="newTriangle">Triangle</div>
+                <div id="newRectangle">Rectangle</div>
                 <div id="newCircle">Circle</div>
                 <label for="newImage" class="cursor-pointer"
-                  >New Image Layer</label
+                  >Image Layer</label
                 >
                 <input
                   type="file"
@@ -190,8 +193,16 @@
                   class="hidden"
                   accept=".jpg, .jpeg, .png"
                 />
-                <div id="fillColor">Fill</div>
-                <div id="stroke">Stroke Color</div>
+                <form id="newShape">
+                  <div>Fill:</div>
+                  <input
+                    type="color"
+                    name="color"
+                    value="#ff0000"
+                    class="color-picker"
+                    id="shapeColorPicked"
+                  />
+                </form>
               </div>
             </div>
             <div id="stickers" data-tab-content>

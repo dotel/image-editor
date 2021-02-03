@@ -312,3 +312,7 @@ i.fab,
   /* margin-left: 20px; */
   padding-right: 50px;
 }
+
+.noselect {
+   user-select: none; 
+}

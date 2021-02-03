@@ -26,8 +26,9 @@ const TOOLS = {
 const DEFAULT_IMAGE = {x: 100, y: 100, width: 200, height: 200};
 const DEFAULT_RECTANGLE = { x: 100, y: 100, width: 200, height: 200};
 const DEFAULT_STICKER = { x: 100, y: 100, width: 100, height: 100 };
+const DEFAULT_CIRCLE = { x: 200, y: 200, radius: 100, fill: "yellow" };
 
 export {
   INTERVAL, BOX_COLOR, TOOLS,
-  DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER,
+  DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE,
 };

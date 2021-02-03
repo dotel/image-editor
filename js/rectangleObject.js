@@ -19,6 +19,8 @@ export default class Rectangle {
     this.strokeStyle = strokeStyle;
     this.fill = fill;
     this.isCropTool = isCropTool;
+    this.isShape = true;
+    this.type = 'rectangle'
   }
 
   /**
