@@ -182,27 +182,33 @@
             </div>
             <div id="shape" data-tab-content class="active">
               <div class="tool-options-wrapper">
-                <div id="newRectangle">Rectangle</div>
-                <div id="newCircle">Circle</div>
-                <label for="newImage" class="cursor-pointer"
-                  >Image Layer</label
-                >
-                <input
-                  type="file"
-                  id="newImage"
-                  class="hidden"
-                  accept=".jpg, .jpeg, .png"
-                />
-                <form id="newShape">
-                  <div>Fill:</div>
-                  <input
-                    type="color"
-                    name="color"
-                    value="#ff0000"
-                    class="color-picker"
-                    id="shapeColorPicked"
-                  />
-                </form>
+                <ul class="new-shape">
+                  <li id="newRectangle"><i class="far fa-square"></i></li>
+                  <li id="newCircle"><i class="far fa-circle"></i></li>
+                  <li>
+                    <label for="newImage" class="cursor-pointer"
+                      ><i class="fas fa-images"></i>
+                    </label>
+                    <input
+                      type="file"
+                      id="newImage"
+                      class="hidden"
+                      accept=".jpg, .jpeg, .png"
+                    />
+                  </li>
+                </ul>
+                <div class="fill-box-wrapper">
+                  <form id="newShape" class="fill-box">
+                    <input
+                      type="color"
+                      name="color"
+                      value="#ff0000"
+                      class="color-picker"
+                      id="shapeColorPicked"
+                    />
+                    Fill:
+                  </form>
+                </div>
               </div>
             </div>
             <div id="stickers" data-tab-content>

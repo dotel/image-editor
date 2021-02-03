@@ -16,7 +16,7 @@ function addTextImage(textProperties, redraw) {
   tempCanvas.width = tempCtx.measureText(text).width;
   tempCanvas.height = size;
 
-  tempCtx.font = `${size - 3}px ${fontFamily}`; // -3 because some fonts have very long g's and tend to crop out
+  tempCtx.font = `${size - 5}px ${fontFamily}`; // -3 because some fonts have very long g's and tend to crop out
 
   tempCtx.fillStyle = textProperties.color;
   tempCtx.textAlign = 'left';

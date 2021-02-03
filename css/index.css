@@ -1,8 +1,3 @@
-/*
-Three primary button colors
-white, #808080 and #bebebe
-*/
-
 .canvas{
   border: 2px solid white; /* for testing purpose only */
 }
@@ -21,7 +16,8 @@ white, #808080 and #bebebe
 #rotateRight,
 #rotateLeft,
 #newRectangle,
-#newImage {
+#newImage,
+#newCircle {
   cursor: pointer;
 }
 
@@ -36,7 +32,6 @@ white, #808080 and #bebebe
   font-size: 16px;
   margin-top: 15px;
   cursor: pointer;
-  /* margin: 0 auto; */
   position: relative;
   left: 20%;
   width: 80px;
@@ -150,8 +145,31 @@ white, #808080 and #bebebe
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  
+  transform: translateY(-50%) translateX(-50%); 
+}
+
+.new-shape i.fas, 
+.new-shape i.far{
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+.new-shape{
+  float: left;
+  list-style: none;
+}
+
+
+.new-shape ~ .fill-box-wrapper{
+  float: right;
+  position: relative;
+  margin-left: 40px;
+} 
+
+.new-shape ~ .fill-box-wrapper .fill-box{
+  position: absolute;
+  /* top: 0%; */
+  top: 50px;
+  /* left: 50%; */
 }
 
 .tool-options-wrapper input {
