@@ -1,18 +1,19 @@
 import { positionResizeHandlers } from './handleresizer.js';
 /**
  * Creates a new instance of ImageObject
+ * Height and width ratio are fixed in the constructor
  * @param {object} layers layers object
- * @param {number} height
- * @param {number} width
+ * @param {number} height In pixels
+ * @param {number} width In pixels
  */
 export default class ImageObject {
-  constructor(layers, width, height, isDrawing) {
-    this.x = 0;
-    this.y = 0;
-    if(isDrawing){
+  constructor(layers, x, y, width, height, isDrawing) {
+    this.x = x;
+    this.y = y;
+    if (isDrawing) {
       this.width = layers.ratioFixedSizeX(width);
       this.height = layers.ratioFixedSizeY(height);
-    } else{
+    } else {
       this.width = width;
       this.height = height;
     }

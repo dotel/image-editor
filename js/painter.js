@@ -26,29 +26,28 @@ export default class Painter {
 
   draw(e) {
     if (this.isDrawing) {
-      this.tempCtx.lineTo(
-        e.clientX - this.canvas.getBoundingClientRect().left,
-        e.clientY - this.canvas.getBoundingClientRect().top,
-        );
-        this.ctx.lineTo(
-          this.layers.ratioFixedSizeX(e.clientX - this.canvas.getBoundingClientRect().left),
-          this.layers.ratioFixedSizeY(e.clientY - this.canvas.getBoundingClientRect().top),
-          );
+      let x = e.clientX - this.canvas.getBoundingClientRect().left;
+      let y = e.clientY - this.canvas.getBoundingClientRect().top;
+      this.tempCtx.lineTo(x,y,);
+      this.ctx.lineTo(
+        this.layers.ratioFixedSizeX(x),
+        this.layers.ratioFixedSizeY(y),
+      );
       this.tempCtx.lineWidth = this.strokeSize;
       this.ctx.lineWidth = this.layers.ratioFixedSizeX(this.strokeSize);
       this.drawOnGivenContext(this.tempCtx)
       this.drawOnGivenContext(this.ctx);
+      }
     }
-  }
-  drawOnGivenContext(ctx){
-    ctx.strokeStyle = this.fillColor;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-  }
-
-  stopDrawing() {
-    if (this.isDrawing) {
+    drawOnGivenContext(ctx){
+      ctx.strokeStyle = this.fillColor;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    
+    stopDrawing() {
+      if (this.isDrawing) {
       this.isDrawing = false;
       this.tempCtx.stroke();
       this.tempCtx.closePath();
@@ -67,9 +66,10 @@ export default class Painter {
   drawingToImage() {
     const paintImage = new ImageObject(
       this.layers,
+      0, 0,
       this.tempCanvas.width,
       this.tempCanvas.height,
-      true
+      true,
     );
     paintImage.image.src = this.tempCanvas.toDataURL();
     this.layers.objects.push(paintImage);

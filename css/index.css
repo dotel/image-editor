@@ -1,3 +1,8 @@
+/*
+Three primary button colors
+white, #808080 and #bebebe
+*/
+
 .canvas{
   border: 2px solid white; /* for testing purpose only */
 }
@@ -5,6 +10,7 @@
 .image-info {
   font-size: 14px;
 }
+
 .image-info p {
   margin-top: 10px;
   border-bottom: 2px solid #fff;
@@ -117,7 +123,7 @@
 .layer-actions {
   margin-top: 10px;
   margin-bottom: 10px;
-  border-bottom: 2px solid #2d2d2d;
+  border-bottom: 2px solid #808080;
 }
 
 .tool .tool-info {
@@ -143,11 +149,9 @@
 .tool-options-wrapper {
   position: absolute;
   top: 50%;
-  left: 15%;
-  transform: translateY(-50%);
-  width: 100%;
-  /* padding-left: 60px; */
-  /* height: 100%; */
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  
 }
 
 .tool-options-wrapper input {
@@ -160,6 +164,7 @@
 
 #loadedMaskImage img{
   display: block;
+  margin: 0 auto;
   height: 100px;
   width: 100px;
 }
@@ -167,10 +172,53 @@
 
 i.fas,
 i.fab,
-.tool img {
+.tool img{
   width: 20px;
-  padding-left: 15px;
+  fill: #bebebe;
+  color: #bebebe;
+  padding: 5px;
 }
+
+
+.tool.active i.fas,
+.tool.active i.fab,
+.tool:hover i.fas,
+.tool:hover i.fab,
+.tool:hover img,
+.tool.active img {
+  background-color: black;
+}
+
+/* .tool.active.no-background img,
+.tool.active.no-background i.fas,
+.tool.active.no-background i.fab{
+  background-color: unset;
+} */
+
+
+
+.fas.fa-upload{
+  /* color: rebeccapurple; */
+  font-size: 40px;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+.mask-image-tab p{
+  font-size: 16px;;
+}
+.mask-image-tab .apply-button{
+  left: 0;
+  width: 100%;
+}
+
+.tool:active img {
+  background-color: black;
+}
+
+
 
 .white-btn {
   color: black;
@@ -228,13 +276,13 @@ i.fab,
   scrollbar-color: dark;
   overflow-y: scroll;
   height: 900px;
-  width: 80%;
 }
 
 .frames img{
   width: 150px;
   padding: 10px 0;
   cursor: pointer;
+  padding-right: 20px;
 }
 
 #fontSelect{
@@ -246,8 +294,11 @@ i.fab,
   color: black;
   font-family: 'Montez';
   font-size: 40px;
-  line-height: 4.5rem; /* supports largest font size allowed */
-  width: calc(200px);
+  line-height: 4rem;
+}
+
+.text-tool-wrapper{
+  height: 450px;
 }
 /* 
 .disabled-button{
@@ -258,5 +309,6 @@ i.fab,
   width: 100px;
   padding: 10px 0;
   cursor: pointer;
-  margin-left: 20px;
+  /* margin-left: 20px; */
+  padding-right: 50px;
 }

@@ -1,14 +1,14 @@
-import {BOX_COLOR } from './constants.js';
+import { BOX_COLOR } from './constants.js';
 
 /**
- * This method positions the resize handles correctly 
+ * This method positions the resize handles correctly
  * when layer is being resized
  * @param {context} ctx Canvas Context
  * @param {object} selectedObject Selected layer object
  * @param {object} selectionHandles Selected layer handle
  */
 function positionResizeHandlers(layers, selectedObject, selectionHandles) {
-  let ctx = layers.ctx;
+  const { ctx } = layers;
   if (selectedObject === this) {
     // 0  1  2
     // 3     4
@@ -43,7 +43,8 @@ function positionResizeHandlers(layers, selectedObject, selectionHandles) {
     for (let i = 0; i < 8; i += 1) {
       const selectionHandle = selectionHandles[i];
 
-      ctx.fillRect(selectionHandle.x, selectionHandle.y, layers.selectionHandleBoxSize, layers.selectionHandleBoxSize);
+      ctx.fillRect(selectionHandle.x, selectionHandle.y, layers.selectionHandleBoxSize,
+        layers.selectionHandleBoxSize);
     }
   }
 }

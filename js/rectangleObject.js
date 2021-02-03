@@ -21,6 +21,11 @@ export default class Rectangle {
     this.isCropTool = isCropTool;
   }
 
+  /**
+   * @param {object} context HTML5 canvas context 
+   * @param {object} selectedObject Currently selected object  
+   * @param {Array} selectionHandles Array of 8 selection handles   
+   */
   draw(context, selectedObject, selectionHandles) {
     context.fillStyle = this.fill;
     /* Transparent fill is used by crop tool box only, 

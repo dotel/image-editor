@@ -1,24 +1,23 @@
-/* eslint-disable import/extensions */
 import {
-  randomColor,
   clearContext,
   deepCloneObj,
   swapArrayElement,
   angleToRadian,
-  getInitialDrawproperties
+  getInitialDrawproperties,
+  isPotrait,
+  swapValuesAndReturn,
 } from './utilities.js';
 import Rectangle from './rectangleObject.js';
 import ImageObject from './imageobject.js';
-import { INTERVAL,TOOLS } from './constants.js';
+import {
+  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER,
+} from './constants.js';
 import { addTextImage } from './texttoimage.js';
 import ObjectState from './objectstates.js';
 import Painter from './painter.js';
-import {handleNewLayersAddition} from './newlayerhandler.js'
-
+import { handleNewLayersAddition } from './newlayerhandler.js';
 
 let painter;
-const originalImageWidth = document.getElementById('originalImageWidth');
-const originalImageHeight = document.getElementById('originalImageHeight');
 const maindrawInterval = {};
 
 export default class Layers {
@@ -26,29 +25,27 @@ export default class Layers {
     this.redraw = { status: false };
     this.isDrag = false;
     this.isResizeDrag = false;
-    // this.mouseX, this.mouseY;
-    this.selectedObject = -1;
     this.selectionHandle = [];
     this.resizeHandle = null;
     this.objects = [];
-    this.actualCanvasHeight, this.actualCanvasWidth;
-    this.changes = [new ObjectState(this.objects)];
+    this.selectedObject = -1;
     this.recentUndo = false;
     this.oldselectedObject = -1;
     this.stateChangeRequired = false;
-    this.currentState = 0;
     this.toolSelected = -1;
     this.originalImage = new Image();
-    this.rotation = 0;
+    this.angle = 0;
   }
 
   /**
-   * 
+   *
    * @param {object} originalCtx Canvas context
    * @param {object} originalCanvas HTML5 canvas
    * @param {image} image Html5 image object
    */
   initializeLayers(originalCtx, originalCanvas, image) {
+    this.changes = [new ObjectState(this.objects)];
+    this.currentState = 0;
     this.image = image;
     this.canvas = originalCanvas;
     this.ctx = originalCtx;
@@ -65,15 +62,12 @@ export default class Layers {
         this.originalImage.width = image.width;
         this.originalImage.height = image.height;
         this.originalImage.src = image.src;
-        originalImageHeight.innerText = `${image.height}`;
-        originalImageWidth.innerText = `${image.width}`;
       }
       this.height = image.height;
       this.width = image.width;
       this.canvas.width = this.width;
       this.canvas.height = this.height;
 
-      // Main image being edited is drawn to the the main canvas
       this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
 
       this.setRatio();
@@ -83,41 +77,44 @@ export default class Layers {
       this.topLayer.width = this.width;
       this.topLayerContext = this.topLayer.getContext('2d');
 
-      requestAnimationFrame(this.mainDraw.bind(this))
+      requestAnimationFrame(this.mainDraw.bind(this));
       for (let i = 0; i < 8; i += 1) {
         this.selectionHandle.push(new Rectangle(this));
       }
-      painter = new Painter(getInitialDrawproperties().color, getInitialDrawproperties().size, this);
+      painter = new Painter(getInitialDrawproperties().color,
+        getInitialDrawproperties().size, this);
     };
   }
-  
+
+  // redraw only when redraw status is true and the painter isn't drawing
   mainDraw() {
-    if (this.redraw.status && !this.isDrawing()) {
-     if(this.needsRotation){
-      var cx = this.canvas.width / 2;
-      var cy = this.canvas.height / 2;
+    if (this.redraw.status && !(painter && painter.isDrawing)) {
+      const cx = this.canvas.width / 2;
+      const cy = this.canvas.height / 2;
+      this.ctx.save();
       this.ctx.translate(cx, cy);
-      this.ctx.rotate(angleToRadian(this.rotation));
-      this.ctx.drawImage(this.image, 0, 0, -this.width/2, -this.height/2);
-     } else
-       this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
+      this.ctx.rotate(angleToRadian(this.angle));
+      this.ctx.drawImage(this.image, -this.width / 2, -this.height / 2);
+      this.ctx.restore();
+      this.needsRotation = false;
       for (let i = 0; i < this.objects.length; i += 1) {
         this.objects[i].draw(
           this.ctx,
           this.selectedObject,
-          this.selectionHandle, 
-          );
-        }
-        this.redraw.status = false;
+          this.selectionHandle,
+          this.angle,
+        );
       }
-      requestAnimationFrame(this.mainDraw.bind(this));
+      this.redraw.status = false;
     }
-    
-    isDrawing(){
-      return painter && painter.isDrawing;
-    }
-    
-    handleMouseDown(e) {
+    requestAnimationFrame(this.mainDraw.bind(this));
+  }
+
+  /**
+   * Handles mouse down event
+   * @param {Event} e Mouse down event
+   */
+  handleMouseDown(e) {
     this.setMouseLocation(e);
     if (this.resizeHandle !== null) {
       this.isResizeDrag = true;
@@ -125,7 +122,6 @@ export default class Layers {
     }
     for (let i = this.objects.length - 1; i >= 0; i -= 1) {
       this.objects[i].draw(this.topLayerContext);
-
       const imageData = this.topLayerContext.getImageData(
         this.mouseX,
         this.mouseY,
@@ -150,6 +146,10 @@ export default class Layers {
     this.redrawEverything();
   }
 
+  /**
+   * Resizes and moves selected object
+   * @param {Event} e Mouse moved event
+   */
   handleMouseMove(e) {
     if (this.isDrag) {
       this.setMouseLocation(e);
@@ -205,11 +205,13 @@ export default class Layers {
       }
       this.isResizeDrag = false;
       this.resizeHandle = null;
-      if(this.toolSelected !== TOOLS.DRAW)
-        this.canvas.style.cursor = 'auto';
+      if (this.toolSelected !== TOOLS.DRAW) this.canvas.style.cursor = 'auto';
     }
   }
 
+  /**
+   * Resizes selected object based on resizeHandle choosen
+   */
   resizeSelectedObject() {
     const oldx = this.selectedObject.x;
     const oldy = this.selectedObject.y;
@@ -252,10 +254,12 @@ export default class Layers {
       default:
         break;
     }
-
     this.redrawEverything();
   }
 
+  /**
+   * Handles mouse up event
+   */
   handleMouseUp() {
     this.isDrag = false;
     this.isResizeDrag = false;
@@ -269,6 +273,9 @@ export default class Layers {
     this.stateChangeRequired = false;
   }
 
+  /**
+   * @param {object} oldselectedObject Seleted object clone right after it was selected
+   */
   isSelectedObjectChanged(oldselectedObject) {
     return (
       this.selectedObject.height !== oldselectedObject.height
@@ -320,7 +327,7 @@ export default class Layers {
     for (const [name, value] of data) {
       textProperties[name] = value;
     }
-    let textImage = addTextImage(textProperties, this);
+    const textImage = addTextImage(textProperties, this);
     this.objects.push(textImage);
     this.redrawEverything();
     this.createNewState();
@@ -328,20 +335,40 @@ export default class Layers {
 
   /**
    * Adds a new image layer to the canvas
-   * 
+   *
    * @param {Image} imageElement
+   * @param {string} type Type of image - text, sticker, frame, mask, normal
    */
-  addImage(imageElement) {
-      const imageLayer = new ImageObject(
-        this,
-        200,
-        200,
-      );
-      imageLayer.image.src = imageElement.src;
-      imageLayer.image.onload = () =>{
+  addImage(imageElement, type) {
+    let height;
+    let width;
+    let x;
+    let y;
+    if (type === 'frame') {
+      [x, y] = [0, 0];
+      if ((isPotrait(imageElement) && !isPotrait(this.image))
+      || (!isPotrait(imageElement) && isPotrait(this.image))) {
+        [height, width] = swapValuesAndReturn(height, width);
+      }
+      height = this.image.width;
+      width = this.image.height;
+    } else if (type === 'sticker') {
+      [x, y] = [DEFAULT_STICKER.x, DEFAULT_STICKER.y];
+      height = this.ratioFixedSizeX(DEFAULT_STICKER.x);
+      width = this.ratioFixedSizeX(DEFAULT_STICKER.y);
+    }
+    const imageLayer = new ImageObject(
+      this,
+      x,
+      y,
+      height,
+      width,
+    );
+    imageLayer.image.src = imageElement.src;
+    imageLayer.image.onload = () => {
       this.objects.push(imageLayer);
       this.createNewState.bind(this)();
-      }
+    };
   }
 
   addImageFromFile(newImageLayer) {
@@ -349,8 +376,10 @@ export default class Layers {
     const fr = new FileReader();
     const imageLayer = new ImageObject(
       this,
-      this.ratioFixedSizeX(200),
-      this.ratioFixedSizeY(200),
+      this.ratioFixedSizeX(DEFAULT_IMAGE.x),
+      this.ratioFixedSizeX(DEFAULT_IMAGE.y),
+      this.ratioFixedSizeX(DEFAULT_IMAGE.width),
+      this.ratioFixedSizeY(DEFAULT_IMAGE.height),
     );
     function createImage() {
       imageLayer.image.src = fr.result;
@@ -361,9 +390,9 @@ export default class Layers {
     fr.readAsDataURL(file);
   }
 
-
-  
-
+  /**
+   * Creates a new undo state
+   */
   createNewState() {
     if (this.recentUndo) {
       for (let i = this.changes.length - 1; i > this.currentState; i -= 1) {
@@ -377,6 +406,9 @@ export default class Layers {
     this.redrawEverything();
   }
 
+  /**
+   * Can't redo operations on image itself, like crop and resize and reset
+   */
   undo() {
     if (this.currentState > 0) {
       this.currentState -= 1;
@@ -388,6 +420,9 @@ export default class Layers {
     }
   }
 
+  /**
+   * Redo previous operation.
+   */
   redo() {
     if (this.currentState + 1 < this.changes.length) {
       this.currentState += 1;
@@ -398,18 +433,24 @@ export default class Layers {
     }
   }
 
+  /**
+   * Resets the image back to it's original state
+   */
   reset() {
     this.currentState = this.changes.length;
     this.objects = [];
-    this.canvas.height = originalImageHeight.innerText;
-    this.canvas.width = originalImageWidth.innerText;
-    this.height = originalImageHeight.innerText;
-    this.width = originalImageWidth.innerText;
+    this.height = this.originalImage.height;
+    this.width = this.originalImage.width;
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
     this.image = this.originalImage;
     this.setRatio();
     this.redrawEverything();
   }
 
+  /**
+   * Deletes the selected layer from the canvas
+   */
   delete() {
     if (this.selectedObject !== -1 && !this.selectedObject.isCropTool) {
       this.objects = this.objects.filter((item) => item !== this.selectedObject);
@@ -419,9 +460,14 @@ export default class Layers {
     }
   }
 
+  /**
+   *
+   * @param {color} color Hex color used by the paint brush
+   * @param {number} size Size of the stroke
+   */
   draw(color, size) {
-    const drawProperties = document.getElementById('drawProperties')
-    drawProperties.addEventListener('input', (e)=>{
+    const drawProperties = document.getElementById('drawProperties');
+    drawProperties.addEventListener('input', () => {
       const data = new FormData(drawProperties);
       const drawOptions = {};
       for (const [name, value] of data) {
@@ -429,31 +475,31 @@ export default class Layers {
       }
       painter.fillColor = drawOptions.color;
       painter.strokeSize = drawOptions.size;
-    })
+    });
     painter.stokeSize = size;
     painter.fillColor = color;
-    function startDrawing(){
-      if (this.selectedObject === -1 && this.toolSelected === TOOLS.DRAW) {
-        painter.startDrawing.bind(painter)(maindrawInterval);
+    function isDrawToolSelected() {
+      return this.toolSelected === TOOLS.DRAW;
+    }
+    function startDrawing() {
+      if (this.selectedObject === -1 && isDrawToolSelected.bind(this)()) { painter.startDrawing.bind(painter)(maindrawInterval); }
+    }
+    function continueDrawing(e) {
+      if (isDrawToolSelected.bind(this)()) {
+        painter.draw.bind(painter)(e);
       }
     }
-    function continueDrawing(e){
-      if(this.toolSelected === TOOLS.DRAW)
-      painter.draw.bind(painter)(e);
-    }
-    function stopDrawing(){
-      if(this.toolSelected === TOOLS.DRAW){
-        painter.stopDrawing.bind(painter)();
-      }
+    function stopDrawing() {
+      if (isDrawToolSelected.bind(this)()) painter.stopDrawing.bind(painter)();
     }
     this.canvas.addEventListener('mousedown', startDrawing.bind(this));
     this.canvas.addEventListener('mousemove', continueDrawing.bind(this));
-    
+
     this.canvas.addEventListener('mouseup', stopDrawing.bind(this));
     this.canvas.addEventListener('mouseout', stopDrawing.bind(this));
-    
   }
 
+  // Resizes the canvas when viewport is decreased in size and sets up ratio;
   resize(e) {
     e.preventDefault();
     const imgResizeValue = document.getElementById('imgResizeValue');
@@ -495,47 +541,56 @@ export default class Layers {
   }
 
   mask(maskImageObject) {
-    this.height = maskImageObject.height;
-    this.width = maskImageObject.width;
-    this.canvas.height = this.height;
-    this.canvas.width = this.width;
     this.objects = this.objects.filter((obj) => obj !== maskImageObject);
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
-    tempCanvas.width = this.width;
-    tempCanvas.height = this.height;
-    
-    tempCtx.drawImage(
-      this.image,
-      maskImageObject.x,
-      maskImageObject.y,
-      maskImageObject.width,
-      maskImageObject.height,
-      0,
-      0,
-      tempCanvas.width,
-      tempCanvas.height,
-      );
-    tempCtx.globalCompositeOperation = 'destination-in';
-    tempCtx.drawImage(
-      maskImageObject.image,
-      0,
-      0,
-      tempCanvas.width,
-      tempCanvas.height,
-    );
-    const tempImage = new Image(maskImageObject.width, maskImageObject.height);
-    tempImage.src = tempCanvas.toDataURL();
-    tempImage.onload = ()=>{
-      this.image = tempImage;
-      this.redrawEverything();
-    }
+    this.redrawEverything();
+    setTimeout(() => {
+      const tempImg = new Image();
+      tempImg.src = this.canvas.toDataURL();
+      this.height = maskImageObject.height;
+      this.width = maskImageObject.width;
+      this.canvas.height = this.height;
+      this.canvas.width = this.width;
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = this.width;
+      tempCanvas.height = this.height;
+
+      tempImg.onload = () => {
+        tempCtx.drawImage(
+          tempImg,
+          maskImageObject.x,
+          maskImageObject.y,
+          maskImageObject.width,
+          maskImageObject.height,
+          0,
+          0,
+          tempCanvas.width,
+          tempCanvas.height,
+        );
+        tempCtx.globalCompositeOperation = 'destination-in';
+        tempCtx.drawImage(
+          maskImageObject.image,
+          0,
+          0,
+          tempCanvas.width,
+          tempCanvas.height,
+        );
+        const tempImage = new Image(maskImageObject.width, maskImageObject.height);
+        tempImage.src = tempCanvas.toDataURL();
+        tempImage.onload = () => {
+          this.initializeLayers(this.ctx, this.canvas, tempImage);
+          this.redrawEverything();
+        };
+      };
+    }, 100);
+
+    // this.redrawEverything();
+    // this.image.src = this.canvas.toDataURL();
   }
 
   crop(cropBox) {
-   
     const cropBoxClone = deepCloneObj(cropBox);
-    this.objects = this.objects.filter((obj) => obj != cropBox);
+    this.objects = this.objects.filter((obj) => obj !== cropBox);
     this.redraw.status = true;
 
     const tempCanvas = document.createElement('canvas');
@@ -548,7 +603,7 @@ export default class Layers {
       canvasImg.width = this.width;
       canvasImg.height = this.height;
 
-      canvasImg.src = this.canvas.toDataURL('image/jpeg', 0.9);
+      canvasImg.src = this.canvas.toDataURL();
       canvasImg.onload = () => {
         tempCtx.drawImage(
           canvasImg,
@@ -562,7 +617,7 @@ export default class Layers {
           cropBoxClone.height,
         );
 
-        this.image.src = tempCanvas.toDataURL('image/jpeg', 0.9);
+        this.image.src = tempCanvas.toDataURL();
       };
 
       this.height = cropBoxClone.height;
@@ -574,23 +629,35 @@ export default class Layers {
     }, 200);
   }
 
-  rotateLeft(){
-    this.rotation += 30;
-    this.newCanvasSize(this.width, this.height, this.rotation);
+  rotate(rotationAmout) {
+    this.angle += rotationAmout;
+    this.newCanvasSize(this.width, this.height, this.angle);
     this.needsRotation = true;
     this.redrawEverything();
   }
 
-  newCanvasSize(width, height, rotation){
+  rotateLeft() {
+    this.rotate(30);
+  }
+
+  rotateRight() {
+    this.rotate(-30);
+  }
+
+  rotateAngle(x) {
+    this.rotate(x);
+  }
+
+  newCanvasSize(width, height, rotation) {
     const angleInRadian = angleToRadian(rotation);
-    var c = Math.abs(Math.cos(angleInRadian));
-    var s = Math.abs(Math.sin(angleInRadian));
+    const c = Math.abs(Math.cos(angleInRadian));
+    const s = Math.abs(Math.sin(angleInRadian));
     this.canvas.width = height * s + width * c;
     this.canvas.height = height * c + width * s;
   }
 
   /**
- * 
+ *
  * @param {number} x  x value
  * @returns {number} Ratio adjusted x value
  */
@@ -598,9 +665,8 @@ export default class Layers {
     return x / this.xratio;
   }
 
-
   /**
- * 
+ *
  * @param {number} y  y value
  * @returns {number} Ratio adjusted y value
  */

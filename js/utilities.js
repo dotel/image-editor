@@ -3,7 +3,6 @@ function clearContext(ctx, width, height) {
   ctx.clearRect(0, 0, width, height);
 }
 
-
 // Generates a random hex color
 function randomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -13,7 +12,6 @@ function randomColor() {
 function angleToRadian(deg) {
   return (Math.PI * deg) / 180;
 }
-
 
 // Returns a clone of the object
 function deepCloneObj(object) {
@@ -32,7 +30,7 @@ function swapArrayElement(arr, i, j) {
   arr[j] = temp;
 }
 
-function getInitialDrawproperties(){
+function getInitialDrawproperties() {
   const data = new FormData(drawProperties);
   const drawOptions = {};
   for (const [name, value] of data) {
@@ -41,11 +39,33 @@ function getInitialDrawproperties(){
   return drawOptions;
 }
 
+/**
+ * Returns true if the image argument is potrait
+ * @param {HTMLImageElement} image
+ */
+function isPotrait(image) {
+  return image.height > image.width;
+}
+
+/**
+ * Swaps two values and return them
+ * @param {object} x
+ * @param {object} y
+ */
+function swapValuesAndReturn(x, y) {
+  const temp = x;
+  x = y;
+  y = temp;
+  return [x, y];
+}
+
 export {
   clearContext,
   randomColor,
   angleToRadian,
   deepCloneObj,
   swapArrayElement,
-  getInitialDrawproperties
+  getInitialDrawproperties,
+  isPotrait,
+  swapValuesAndReturn,
 };
