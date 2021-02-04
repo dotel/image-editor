@@ -30,7 +30,6 @@ export default class Rectangle {
    */
   draw(context, selectedObject, selectionHandles) {
     context.fillStyle = this.fill;
-    console.log(this.layers.height)
     /* Transparent fill is used by crop tool box only,
     Setting a little black fill to distinguish crop tool from normal rectangle
     */
