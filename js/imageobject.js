@@ -1,4 +1,5 @@
 import { positionResizeHandlers } from './handleresizer.js';
+import { drawRotatedImage } from './utilities.js';
 /**
  * Creates a new instance of ImageObject
  * Height and width ratio are fixed in the constructor
@@ -27,8 +28,7 @@ export default class ImageObject {
     this.isDrawing = isDrawing;
   }
 
-  draw(context, selectedObject, selectionHandles) {
-    console.log(this.image)
+  draw(context, selectedObject, selectionHandles, angle) {
     context.drawImage(this.image, this.x, this.y, this.width, this.height);
     if (!this.isDrawing) {
       positionResizeHandlers.bind(this)(this.layers, selectedObject, selectionHandles);

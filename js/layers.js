@@ -7,15 +7,15 @@ import {
   isPotrait,
   swapValuesAndReturn,
 } from './utilities.js';
-import Rectangle from './rectangleObject.js';
+import Rectangle from './rectangleobject.js';
 import ImageObject from './imageobject.js';
 import {
-  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE
+  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE, RESIZING_BOX_SIZE
 } from './constants.js';
 import { addTextImage } from './texttoimage.js';
 import ObjectState from './objectstates.js';
 import Painter from './painter.js';
-import {createCircleImage} from './circleToImage.js'
+import { createCircleImage } from './circletoimage.js';
 
 let painter;
 const maindrawInterval = {};
@@ -87,20 +87,13 @@ export default class Layers {
   // redraw only when redraw status is true and the painter isn't drawing
   mainDraw() {
     if (this.redraw.status && !(painter && painter.isDrawing)) {
-      const cx = this.canvas.width / 2;
-      const cy = this.canvas.height / 2;
-      this.ctx.save();
-      this.ctx.translate(cx, cy);
-      this.ctx.rotate(angleToRadian(this.angle));
-      this.ctx.drawImage(this.image, -this.width / 2, -this.height / 2);
+      this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
       this.ctx.restore();
-      this.needsRotation = false;
       for (let i = 0; i < this.objects.length; i += 1) {
         this.objects[i].draw(
           this.ctx,
           this.selectedObject,
           this.selectionHandle,
-          this.angle,
         );
       }
       this.redraw.status = false;
@@ -113,6 +106,7 @@ export default class Layers {
    * @param {Event} e Mouse down event
    */
   handleMouseDown(e) {
+  
     this.setMouseLocation(e);
     if (this.resizeHandle !== null) {
       this.isResizeDrag = true;
@@ -125,21 +119,22 @@ export default class Layers {
         this.mouseY,
         1,
         1,
-      );
-      if (imageData.data[3] > 0) {
-        this.selectedObject = this.objects[i];
-        this.oldselectedObject = deepCloneObj(this.selectedObject);
-        this.offsetx = this.mouseX - this.selectedObject.x;
-        this.offsety = this.mouseY - this.selectedObject.y;
-        this.selectedObject.x = this.mouseX - this.offsetx;
-        this.selectedObject.y = this.mouseY - this.offsety;
-        this.isDrag = true;
-        this.redrawEverything();
-        clearContext(this.topLayerContext, this.width, this.height);
-        return;
+        );
+        if (imageData.data[3] > 0) {
+          this.selectedObject = this.objects[i];
+          this.oldselectedObject = deepCloneObj(this.selectedObject);
+          this.offsetx = this.mouseX - this.selectedObject.x;
+          this.offsety = this.mouseY - this.selectedObject.y;
+          this.selectedObject.x = this.mouseX - this.offsetx;
+          this.selectedObject.y = this.mouseY - this.offsety;
+          this.isDrag = true;
+          this.redrawEverything();
+          clearContext(this.topLayerContext, this.width, this.height);
+          return;
+        }
       }
-    }
     this.selectedObject = -1;
+    // this.topLayerContext.restore();
     this.oldselectedObject = -1;
     this.redrawEverything();
   }
@@ -296,7 +291,7 @@ export default class Layers {
 
     this.xratio = this.actualCanvasHeight / this.height;
     this.yratio = this.actualCanvasWidth / this.width;
-    this.selectionHandleBoxSize = this.ratioFixedSizeX(10);
+    this.selectionHandleBoxSize = this.ratioFixedSizeX(RESIZING_BOX_SIZE);
   }
 
   setMouseLocation(e) {
@@ -317,7 +312,7 @@ export default class Layers {
     this.redrawEverything();
   }
 
-  addCircle(e, fill){
+  addCircle(e, fill) {
     const circleImage = createCircleImage(DEFAULT_CIRCLE.x, DEFAULT_CIRCLE.y, 100, this, fill);
     this.objects.push(circleImage);
     this.redrawEverything();
@@ -487,7 +482,9 @@ export default class Layers {
       return this.toolSelected === TOOLS.DRAW;
     }
     function startDrawing() {
-      if (this.selectedObject === -1 && isDrawToolSelected.bind(this)()) { painter.startDrawing.bind(painter)(maindrawInterval); }
+      if (this.selectedObject === -1 && isDrawToolSelected.bind(this)()) {
+        painter.startDrawing.bind(painter)(maindrawInterval);
+      }
     }
     function continueDrawing(e) {
       if (isDrawToolSelected.bind(this)()) {
@@ -634,32 +631,55 @@ export default class Layers {
     }, 200);
   }
 
-  rotate(rotationAmout) {
-    this.angle += rotationAmout;
-    this.newCanvasSize(this.width, this.height, this.angle);
-    this.needsRotation = true;
-    this.redrawEverything();
+
+/**
+ * Rotates the image inside the canvas flexibly by resizing the canvas
+ * @param {number} angle  
+ */
+  rotate(angle) {
+    let img = new Image();
+    img.src = this.canvas.toDataURL();
+    img.onload =  ()=>{
+      this.objects = [];
+      this.changes = [];
+      var rads = angleToRadian(angle);
+      var c = Math.abs(Math.cos(rads));
+      var s = Math.abs(Math.sin(rads));
+      this.canvas.width = this.height * s + this.width * c;
+      this.canvas.height = this.height * c + this.width * s;
+      this.height = this.canvas.height;
+      this.width = this.canvas.width;
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = this.canvas.width;
+      tempCanvas.height = this.canvas.height;
+      var cx = this.canvas.width / 2;
+      var cy = this.canvas.height / 2;
+      tempCtx.translate(cx, cy);
+      tempCtx.rotate(rads);
+      tempCtx.drawImage(img, -this.image.width / 2, -this.image.height / 2);
+      let tempImage = new Image();
+      tempImage.src = tempCanvas.toDataURL();
+      tempImage.onload = ()=> {
+        this.initializeLayers(this.ctx, this.canvas, tempImage);
+        this.redrawEverything();
+      }     
+    }       
   }
 
+
   rotateLeft() {
-    this.rotate(30);
+    this.rotate(90);
   }
 
   rotateRight() {
-    this.rotate(-30);
+    this.rotate(-90);
   }
 
   rotateAngle(x) {
     this.rotate(x);
   }
 
-  newCanvasSize(width, height, rotation) {
-    const angleInRadian = angleToRadian(rotation);
-    const c = Math.abs(Math.cos(angleInRadian));
-    const s = Math.abs(Math.sin(angleInRadian));
-    this.canvas.width = height * s + width * c;
-    this.canvas.height = height * c + width * s;
-  }
 
   /**
  *

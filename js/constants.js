@@ -1,8 +1,9 @@
 // Main draw drawing interval
 const INTERVAL = 20;
 
-// Size of resizing handles
-const BOX_COLOR = 'white';
+const RESIZING_BOX_COLOR = 'white';
+const RESIZING_BOX_SIZE = 10;
+
 
 // Keeps track of current selected tool
 const TOOLS = {
@@ -23,12 +24,26 @@ const TOOLS = {
   DELETE: 16,
 };
 
-const DEFAULT_IMAGE = {x: 100, y: 100, width: 200, height: 200};
-const DEFAULT_RECTANGLE = { x: 100, y: 100, width: 200, height: 200};
-const DEFAULT_STICKER = { x: 100, y: 100, width: 100, height: 100 };
-const DEFAULT_CIRCLE = { x: 200, y: 200, radius: 100, fill: "yellow" };
+const DEFAULT_IMAGE = {
+  x: 100, y: 100, width: 200, height: 200,
+};
+const DEFAULT_RECTANGLE = {
+  x: 100, y: 100, width: 200, height: 200,
+};
+const DEFAULT_STICKER = {
+  x: 100, y: 100, width: 100, height: 100,
+};
+const DEFAULT_CIRCLE = {
+  x: 200, y: 200, radius: 100, fill: 'yellow',
+};
+
+const DEFAULT_TEXT = {
+  x: 100, y: 100,
+};
+
 
 export {
-  INTERVAL, BOX_COLOR, TOOLS,
+  INTERVAL, RESIZING_BOX_COLOR, TOOLS,
   DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE,
+  RESIZING_BOX_SIZE, DEFAULT_TEXT
 };

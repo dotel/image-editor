@@ -59,6 +59,27 @@ function swapValuesAndReturn(x, y) {
   return [x, y];
 }
 
+/**
+ *
+ * @param {object} ctx Html5 Canvas context
+ * @param {HTMLImageElement} image Html5 image element
+ * @param {number} x
+ * @param {number} y
+ * @param {number} width
+ * @param {number} height
+ * @param {number} deg
+ */
+function drawRotatedImage(ctx, image, x, y, width, height, deg) {
+  ctx.save();
+  ctx.translate(x + width / 2, y + height / 2);
+  ctx.rotate(angleToRadian(deg));
+  ctx.drawImage(image, -width / 2, -height / 2, width, height);
+  ctx.restore();
+}
+
+
+
+
 export {
   clearContext,
   randomColor,
@@ -68,4 +89,5 @@ export {
   getInitialDrawproperties,
   isPotrait,
   swapValuesAndReturn,
+  drawRotatedImage,
 };

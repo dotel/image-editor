@@ -20,17 +20,17 @@ export default class Rectangle {
     this.fill = fill;
     this.isCropTool = isCropTool;
     this.isShape = true;
-    this.type = 'rectangle'
+    this.type = 'rectangle';
   }
 
   /**
-   * @param {object} context HTML5 canvas context 
-   * @param {object} selectedObject Currently selected object  
-   * @param {Array} selectionHandles Array of 8 selection handles   
+   * @param {object} context HTML5 canvas context
+   * @param {object} selectedObject Currently selected object
+   * @param {Array} selectionHandles Array of 8 selection handles
    */
   draw(context, selectedObject, selectionHandles) {
     context.fillStyle = this.fill;
-    /* Transparent fill is used by crop tool box only, 
+    /* Transparent fill is used by crop tool box only,
     Setting a little black shade to distinguish crop tool from normal rectangle
     */
     if (this.fill === 'transparent') {

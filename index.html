@@ -76,7 +76,7 @@
                 <i class="fas fa-crop-alt"></i>
                 <span class="tool-info">Crop</span>
               </li>
-              <li id="resizeTool" data-tab-target="#resize" class="tool">
+              <li id="resizeTool" data-tab-target="#resize" class="tool active">
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span class="tool-info">Resize</span>
               </li>
@@ -136,7 +136,7 @@
               </div>
             </div>
 
-            <div id="resize" data-tab-content>
+            <div id="resize" data-tab-content class="active">
               <div class="tool-options-wrapper">
                 <p>Original (px)</p>
                 <div>x: <span id="originalCanvasX"></span></div>
@@ -161,12 +161,12 @@
             </div>
             <div id="rotate" data-tab-content>
               <div class="tool-options-wrapper">
-                <div class="apply-button noselect" id="rotateLeft">
+                <a class="apply-button noselect" id="rotateLeft">
                   Rotate Left
-                </div>
-                <div class="apply-button noselect" id="rotateRight">
+                </a>
+                <a class="apply-button noselect" id="rotateRight">
                   Rotate right
-                </div>
+                </a>
               </div>
             </div>
 
@@ -180,7 +180,7 @@
                 </form>
               </div>
             </div>
-            <div id="shape" data-tab-content class="active">
+            <div id="shape" data-tab-content>
               <div class="tool-options-wrapper">
                 <ul class="new-shape">
                   <li id="newRectangle"><i class="far fa-square"></i></li>
@@ -206,7 +206,8 @@
                       class="color-picker"
                       id="shapeColorPicked"
                     />
-                    Fill:
+                    <span class="tool-info" id="shapeFillInfo"></span>
+                    Fill
                   </form>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { BOX_COLOR } from './constants.js';
+import { RESIZING_BOX_COLOR } from './constants.js';
 
 /**
  * This method positions the resize handles correctly
@@ -10,6 +10,7 @@ import { BOX_COLOR } from './constants.js';
 function positionResizeHandlers(layers, selectedObject, selectionHandles) {
   const { ctx } = layers;
   if (selectedObject === this) {
+    // Resize handles numbering
     // 0  1  2
     // 3     4
     // 5  6  7
@@ -39,7 +40,8 @@ function positionResizeHandlers(layers, selectedObject, selectionHandles) {
     selectionHandles[7].x = this.x + this.width - half;
     selectionHandles[7].y = this.y + this.height - half;
 
-    ctx.fillStyle = BOX_COLOR;
+
+    ctx.fillStyle = RESIZING_BOX_COLOR;
     for (let i = 0; i < 8; i += 1) {
       const selectionHandle = selectionHandles[i];
 

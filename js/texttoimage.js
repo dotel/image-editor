@@ -1,4 +1,5 @@
 import ImageObject from './imageobject.js';
+import {DEFAULT_TEXT} from './constants.js'
 
 /**
  *
@@ -16,7 +17,7 @@ function addTextImage(textProperties, redraw) {
   tempCanvas.width = tempCtx.measureText(text).width;
   tempCanvas.height = size;
 
-  tempCtx.font = `${size - 5}px ${fontFamily}`; // -3 because some fonts have very long g's and tend to crop out
+  tempCtx.font = `${size - 5}px ${fontFamily}`; // -5 because some fonts have very long g's and tend to crop out
 
   tempCtx.fillStyle = textProperties.color;
   tempCtx.textAlign = 'left';
@@ -32,7 +33,7 @@ function addTextImage(textProperties, redraw) {
 
   tempCtx.fillText(text, 0, 0);
 
-  const textImage = new ImageObject(redraw, 100, 100, tempCanvas.width, tempCanvas.height);
+  const textImage = new ImageObject(redraw, DEFAULT_TEXT.x, DEFAULT_TEXT.y, tempCanvas.width, tempCanvas.height);
 
   // push the image of the text to the objects array
   textImage.image.src = tempCanvas.toDataURL();

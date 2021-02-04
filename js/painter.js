@@ -1,7 +1,7 @@
 import ImageObject from './imageobject.js';
 
 /**
- * This class handles draw tool
+ * Handles draw tool
  */
 
 export default class Painter {
@@ -26,28 +26,29 @@ export default class Painter {
 
   draw(e) {
     if (this.isDrawing) {
-      let x = e.clientX - this.canvas.getBoundingClientRect().left;
-      let y = e.clientY - this.canvas.getBoundingClientRect().top;
-      this.tempCtx.lineTo(x,y,);
+      const x = e.clientX - this.canvas.getBoundingClientRect().left;
+      const y = e.clientY - this.canvas.getBoundingClientRect().top;
+      this.tempCtx.lineTo(x, y);
       this.ctx.lineTo(
         this.layers.ratioFixedSizeX(x),
         this.layers.ratioFixedSizeY(y),
       );
       this.tempCtx.lineWidth = this.strokeSize;
       this.ctx.lineWidth = this.layers.ratioFixedSizeX(this.strokeSize);
-      this.drawOnGivenContext(this.tempCtx)
+      this.drawOnGivenContext(this.tempCtx);
       this.drawOnGivenContext(this.ctx);
-      }
     }
-    drawOnGivenContext(ctx){
-      ctx.strokeStyle = this.fillColor;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    }
-    
-    stopDrawing() {
-      if (this.isDrawing) {
+  }
+
+  drawOnGivenContext(ctx) {
+    ctx.strokeStyle = this.fillColor;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+
+  stopDrawing() {
+    if (this.isDrawing) {
       this.isDrawing = false;
       this.tempCtx.stroke();
       this.tempCtx.closePath();
