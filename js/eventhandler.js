@@ -53,6 +53,8 @@ function handleEvents(canvas, ctx, layers, image) {
   const newCircle = document.getElementById('newCircle');
   const newShape = document.getElementById('newShape');
   const shapeColorPicked = document.getElementById('shapeColorPicked');
+  const newCanvas = document.getElementById('newCanvasButton');
+  const downloadButton = document.getElementById('downloadBtn');
 
   let brushColor;
   let brushSize;
@@ -75,6 +77,7 @@ function handleEvents(canvas, ctx, layers, image) {
   // Sets up tabs
   tools.forEach((tool) => {
     tool.addEventListener('click', () => {
+      if (tool.classList.contains('no-target-tool')) return;
       if (tool.dataset.tabTarget) {
         const activeTab = document.querySelector(tool.dataset.tabTarget);
         toolContent.forEach((tabContent) => {
@@ -189,11 +192,14 @@ function handleEvents(canvas, ctx, layers, image) {
     }
   });
 
-  document.getElementById('downloadBtn').addEventListener('click', download);
+  downloadButton.addEventListener('click', download);
+
+  newCanvas.addEventListener('click', () => {
+    layers.createNewCanvas();
+  });
 
   undoTool.addEventListener('click', () => {
     layers.undo();
-    setTool(TOOLS.UNDO);
   });
 
   undoTool.addEventListener('pointerover', () => {
@@ -202,7 +208,6 @@ function handleEvents(canvas, ctx, layers, image) {
 
   redoTool.addEventListener('click', () => {
     layers.redo();
-    setTool(TOOLS.REDO);
   });
 
   redoTool.addEventListener('pointerover', () => {
@@ -211,7 +216,6 @@ function handleEvents(canvas, ctx, layers, image) {
 
   deleteTool.addEventListener('click', () => {
     layers.delete();
-    setTool(TOOLS.DELETE);
   });
 
   deleteTool.addEventListener('mouseover', () => {
@@ -225,12 +229,10 @@ function handleEvents(canvas, ctx, layers, image) {
 
   resetTool.addEventListener('click', () => {
     layers.reset();
-    setTool(TOOLS.RESET);
   });
 
   sendLayerBackwardTool.addEventListener('click', () => {
     layers.sendSelectedLayerBackward();
-    setTool(TOOLS.SEND_BACKWARD);
   });
 
   sendLayerBackwardTool.addEventListener('mouseover', () => {
@@ -243,7 +245,6 @@ function handleEvents(canvas, ctx, layers, image) {
 
   bringLayerForwardTool.addEventListener('click', () => {
     layers.sendSelectedLayerForward();
-    setTool(TOOLS.BRING_FORWARD);
   });
 
   rotateTool.addEventListener('click', () => {
@@ -290,7 +291,7 @@ function handleEvents(canvas, ctx, layers, image) {
   });
 
   // Maintains aspect ratio when image is being resized
-  document.getElementById('resizeValueX').addEventListener('change', (e) => {
+  document.getElementById('resizeValueX').addEventListener('input', (e) => {
     if (preserveAspectRatio.checked) {
       e.preventDefault();
       const xFactor = e.target.value / layers.image.width;
@@ -299,7 +300,7 @@ function handleEvents(canvas, ctx, layers, image) {
   });
 
   // Maintains aspect ratio when image is being resized
-  document.getElementById('resizeValueY').addEventListener('change', (e) => {
+  document.getElementById('resizeValueY').addEventListener('input', (e) => {
     if (preserveAspectRatio.checked) {
       const yFactor = e.target.value / layers.image.height;
       resizeValueX.value = parseInt(`${yFactor * layers.image.width}`, 10);

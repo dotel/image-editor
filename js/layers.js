@@ -10,7 +10,7 @@ import {
 import Rectangle from './rectangleobject.js';
 import ImageObject from './imageobject.js';
 import {
-  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE, RESIZING_BOX_SIZE
+  TOOLS, DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE, RESIZING_BOX_SIZE,
 } from './constants.js';
 import { addTextImage } from './texttoimage.js';
 import ObjectState from './objectstates.js';
@@ -88,7 +88,6 @@ export default class Layers {
   mainDraw() {
     if (this.redraw.status && !(painter && painter.isDrawing)) {
       this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
-      this.ctx.restore();
       for (let i = 0; i < this.objects.length; i += 1) {
         this.objects[i].draw(
           this.ctx,
@@ -106,12 +105,12 @@ export default class Layers {
    * @param {Event} e Mouse down event
    */
   handleMouseDown(e) {
-  
     this.setMouseLocation(e);
     if (this.resizeHandle !== null) {
       this.isResizeDrag = true;
       return;
     }
+    if (this.toolSelected !== TOOLS.DRAW) clearContext(this.topLayerContext, this.width, this.height);
     for (let i = this.objects.length - 1; i >= 0; i -= 1) {
       this.objects[i].draw(this.topLayerContext);
       const imageData = this.topLayerContext.getImageData(
@@ -119,22 +118,21 @@ export default class Layers {
         this.mouseY,
         1,
         1,
-        );
-        if (imageData.data[3] > 0) {
-          this.selectedObject = this.objects[i];
-          this.oldselectedObject = deepCloneObj(this.selectedObject);
-          this.offsetx = this.mouseX - this.selectedObject.x;
-          this.offsety = this.mouseY - this.selectedObject.y;
-          this.selectedObject.x = this.mouseX - this.offsetx;
-          this.selectedObject.y = this.mouseY - this.offsety;
-          this.isDrag = true;
-          this.redrawEverything();
-          clearContext(this.topLayerContext, this.width, this.height);
-          return;
-        }
+      );
+      if (imageData.data[3] > 0) {
+        this.selectedObject = this.objects[i];
+        this.oldselectedObject = deepCloneObj(this.selectedObject);
+        this.offsetx = this.mouseX - this.selectedObject.x;
+        this.offsety = this.mouseY - this.selectedObject.y;
+        this.selectedObject.x = this.mouseX - this.offsetx;
+        this.selectedObject.y = this.mouseY - this.offsety;
+        this.isDrag = true;
+        this.redrawEverything();
+        clearContext(this.topLayerContext, this.width, this.height);
+        return;
       }
+    }
     this.selectedObject = -1;
-    // this.topLayerContext.restore();
     this.oldselectedObject = -1;
     this.redrawEverything();
   }
@@ -267,7 +265,7 @@ export default class Layers {
   }
 
   /**
-   * @param {object} oldselectedObject Seleted object clone right after it was selected
+   * @param {object} oldselectedObject Selected object clone right after it was selected
    */
   isSelectedObjectChanged(oldselectedObject) {
     return (
@@ -510,10 +508,18 @@ export default class Layers {
     for (const [name, value] of data) {
       imageSize[name] = value;
     }
-    this.height = imageSize.yValue;
-    this.width = imageSize.xValue;
+    this.height = parseInt(imageSize.yValue);
+    this.width = parseInt(imageSize.xValue);
     this.canvas.height = this.height;
     this.canvas.width = this.width;
+    this.image.height = this.height;
+    this.image.width = this.width;
+    this.topLayer.height = this.canvas.height;
+    this.topLayer.width = this.canvas.width;
+
+    this.initializeLayers(this.ctx, this.canvas, this.image);
+    painter = new Painter(getInitialDrawproperties().color,
+        getInitialDrawproperties().size, this);
     this.setRatio();
     this.redrawEverything();
   }
@@ -631,42 +637,63 @@ export default class Layers {
     }, 200);
   }
 
-
-/**
- * Rotates the image inside the canvas flexibly by resizing the canvas
- * @param {number} angle  
- */
-  rotate(angle) {
-    let img = new Image();
-    img.src = this.canvas.toDataURL();
-    img.onload =  ()=>{
+  createNewCanvas() {
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    const newImage = new Image();
+    newImage.width = this.image.width;
+    newImage.height = this.image.height;
+    newImage.src = this.canvas.toDataURL();
+    newImage.onload = () => {
+      this.originalImage = newImage;
+      this.image = newImage;
+      this.initializeLayers(this.ctx, this.canvas, this.image);
       this.objects = [];
       this.changes = [];
-      var rads = angleToRadian(angle);
-      var c = Math.abs(Math.cos(rads));
-      var s = Math.abs(Math.sin(rads));
+    };
+  }
+
+  /**
+ * Rotates the image inside the canvas flexibly by resizing the canvas
+ * @param {number} angle
+ */
+  rotate(angle) {
+    const img = new Image();
+    img.src = this.canvas.toDataURL();
+    img.onload = () => {
+      this.objects = [];
+      this.changes = [];
+      const rads = angleToRadian(angle);
+      const c = Math.abs(Math.cos(rads));
+      const s = Math.abs(Math.sin(rads));
       this.canvas.width = this.height * s + this.width * c;
       this.canvas.height = this.height * c + this.width * s;
       this.height = this.canvas.height;
       this.width = this.canvas.width;
+
       const tempCanvas = document.createElement('canvas');
       const tempCtx = tempCanvas.getContext('2d');
       tempCanvas.width = this.canvas.width;
       tempCanvas.height = this.canvas.height;
-      var cx = this.canvas.width / 2;
-      var cy = this.canvas.height / 2;
+
+      const cx = this.canvas.width / 2;
+      const cy = this.canvas.height / 2;
       tempCtx.translate(cx, cy);
       tempCtx.rotate(rads);
       tempCtx.drawImage(img, -this.image.width / 2, -this.image.height / 2);
-      let tempImage = new Image();
+      const tempImage = new Image();
       tempImage.src = tempCanvas.toDataURL();
-      tempImage.onload = ()=> {
+      
+      tempImage.onload = () => {
+        painter = new Painter(getInitialDrawproperties().color,
+          getInitialDrawproperties().size, this);
+        this.topLayer.height = this.canvas.height;
+        this.topLayer.width = this.canvas.width;
         this.initializeLayers(this.ctx, this.canvas, tempImage);
         this.redrawEverything();
-      }     
-    }       
+      };
+    };
   }
-
 
   rotateLeft() {
     this.rotate(90);
@@ -679,7 +706,6 @@ export default class Layers {
   rotateAngle(x) {
     this.rotate(x);
   }
-
 
   /**
  *

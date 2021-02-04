@@ -45,6 +45,7 @@
                 accept=".jpg, .jpeg, .png"
               />
             </li>
+            <li class="white-btn" id="newCanvasButton">New Canvas</li>
             <li class="white-btn download-button" id="downloadBtn">Download</li>
           </ul>
         </div>
@@ -54,20 +55,20 @@
           <div class="left">
             <ul class="tools">
               <div class="layer-actions">
-                <li id="undoTool" class="tool no-background">
+                <li id="undoTool" class="tool no-target-tool">
                   <i class="fas fa-undo"></i>
                   <span class="tool-info">Undo</span>
                 </li>
-                <li id="redoTool" class="tool no-background">
+                <li id="redoTool" class="tool no-target-tool">
                   <i class="fas fa-redo"></i>
                   <span class="tool-info">Redo</span>
                 </li>
-                <li id="resetTool" class="tool no-background">
+                <li id="resetTool" class="tool no-target-tool">
                   <img src="./images/reset.png" alt="" />
 
                   <span class="tool-info">Reset</span>
                 </li>
-                <li id="deleteTool" class="tool no-background">
+                <li id="deleteTool" class="tool no-target-tool">
                   <i class="fas fa-trash"></i>
                   <span class="tool-info">Delete</span>
                 </li>
@@ -80,10 +81,12 @@
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span class="tool-info">Resize</span>
               </li>
-              <li id="rotateTool" data-tab-target="#rotate" class="tool">
+              <li id="rotateTool" class="tool no-target-tool dropdown">
                 <img src="./images/rotate.png" alt="" />
-
-                <span class="tool-info">Rotate</span>
+                <div class="dropdown-content">
+                  <a id="rotateLeft"> Rotate Left </a>
+                  <a id="rotateRight"> Rotate right </a>
+                </div>
               </li>
               <li id="drawTool" data-tab-target="#draw" class="tool">
                 <i class="fas fa-pencil-alt"></i>
@@ -109,11 +112,11 @@
                 <img src="./images/frame.png" alt="" />
                 <span class="tool-info">Frames</span>
               </li>
-              <li id="sendLayerBackwardTool" class="tool no-background">
+              <li id="sendLayerBackwardTool" class="tool no-target-tool">
                 <img src="./images/bring-forward.png" alt="" />
                 <span class="tool-info">Send backward</span>
               </li>
-              <li id="bringLayerForwardTool" class="tool no-background">
+              <li id="bringLayerForwardTool" class="tool no-target-tool">
                 <img src="./images/send-backward.png" alt="" />
                 <span class="tool-info">Bring forward</span>
               </li>
@@ -138,7 +141,7 @@
 
             <div id="resize" data-tab-content class="active">
               <div class="tool-options-wrapper">
-                <p>Original (px)</p>
+                <p>Original Size(px)</p>
                 <div>x: <span id="originalCanvasX"></span></div>
                 <div>y: <span id="originalCanvasY"></span></div>
                 <br /><br />
@@ -159,24 +162,24 @@
                 </form>
               </div>
             </div>
-            <div id="rotate" data-tab-content>
-              <div class="tool-options-wrapper">
-                <a class="apply-button noselect" id="rotateLeft">
-                  Rotate Left
-                </a>
-                <a class="apply-button noselect" id="rotateRight">
-                  Rotate right
-                </a>
-              </div>
-            </div>
 
             <div id="draw" data-tab-content>
               <div class="tool-options-wrapper">
-                <form action="" id="drawProperties">
-                  Color:
-                  <input name="color" type="color" class="color-picker" /><br />
-                  Stroke Size:
-                  <input name="size" type="range" min="1" max="30" />
+                <form action="" id="drawProperties" class="draw-properties">
+                  <div class="option">
+                    <input
+                      name="color"
+                      id="color-picker"
+                      type="color"
+                      class="color-picker"
+                    />
+                    <br />
+                    <label for="color-picker" class="noselect">Color</label>
+                  </div>
+                  <div class="option">
+                    <input name="size" type="range" min="1" max="30" />
+                    <label for="drawToolSize" class="noselect">Size</label>
+                  </div>
                 </form>
               </div>
             </div>
@@ -297,40 +300,52 @@
             </div>
             <div id="text" data-tab-content>
               <div class="tool-options-wrapper text-tool-wrapper">
-                <form id="newText">
-                  Font:
-                  <select id="fontSelect" name="fontFamily"></select>
-                  <br />
-                  Text: <input name="text" id="inputText" type="text" /><br />
-                  <div>Color:</div>
-                  <input
-                    type="color"
-                    name="color"
-                    value="#000000"
-                    class="color-picker"
-                    id="inputTextColorPicked"
-                  />
-                  <div>Size</div>
-                  <input
-                    name="size"
-                    type="range"
-                    min="10"
-                    max="90"
-                    value="40"
-                    id="inputTextFontSize"
-                    oninput="this.nextElementSibling.value=this.value"
-                  />
-                  <input
-                    type="number"
-                    min="10"
-                    max="90"
-                    value="40"
-                    oninput="this.previousElementSibling.value=this.value"
-                  />
+                <form id="newText" class="text-properties">
+                  <div class="option">
+                    <label for="fontSelect">Font</label>
+                    <select id="fontSelect" name="fontFamily"></select>
+                  </div>
+                  <div class="option">
+                    <label for="inputText">Text</label>
+                    <input name="text" id="inputText" type="text" /><br />
+                  </div>
+                  <div class="option">
+                    <label for="inputTextColorPicked">Color</label>
+                    <input
+                      type="color"
+                      name="color"
+                      value="#000000"
+                      class="color-picker"
+                      id="inputTextColorPicked"
+                    />
+                  </div>
+                  <div class="option">
+                    <label for="inputTextFontSize">Size</label>
+                    <input
+                      name="size"
+                      type="range"
+                      min="10"
+                      max="60"
+                      value="40"
+                      id="inputTextFontSize"
+                      class="input-text-font-size"
+                      oninput="this.nextElementSibling.value=this.value"
+                    />
+                    <input
+                      type="number"
+                      min="10"
+                      max="60"
+                      value="40"
+                      oninput="this.previousElementSibling.value=this.value"
+                    />
+                  </div>
+
                   <button type="submit" class="apply-button">Apply</button>
                 </form>
-                Preview
-                <p id="textPreview" class="text-preview">Write something</p>
+                <div class="text-preview-box">
+                  <p>Preview</p>
+                  <p id="textPreview" class="text-preview">Write something</p>
+                </div>
               </div>
             </div>
             <div id="mask" data-tab-content class="mask-image-tab">
@@ -351,7 +366,7 @@
                   <br />
                   <br />
                   <br />
-                  <p>Preview:</p>
+                  <p>Preview</p>
                   <br />
                   <br />
                   <br />

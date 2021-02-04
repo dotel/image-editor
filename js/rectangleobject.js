@@ -14,8 +14,8 @@ export default class Rectangle {
     this.layers = layers;
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.width = layers.ratioFixedSizeX(width);
+    this.height = layers.ratioFixedSizeY(height);
     this.strokeStyle = strokeStyle;
     this.fill = fill;
     this.isCropTool = isCropTool;
@@ -30,19 +30,19 @@ export default class Rectangle {
    */
   draw(context, selectedObject, selectionHandles) {
     context.fillStyle = this.fill;
+    console.log(this.layers.height)
     /* Transparent fill is used by crop tool box only,
-    Setting a little black shade to distinguish crop tool from normal rectangle
+    Setting a little black fill to distinguish crop tool from normal rectangle
     */
     if (this.fill === 'transparent') {
+      context.lineWidth = 5;
+      context.strokeStyle = this.strokeStyle;
+      context.strokeRect(this.x, this.y, this.width, this.height);
       context.fillStyle = 'black';
       context.globalAlpha = '.05';
     }
     context.fillRect(this.x, this.y, this.width, this.height);
     context.globalAlpha = '1';
-    context.strokeStyle = this.strokeStyle;
-    context.lineWidth = 5;
-    context.strokeRect(this.x, this.y, this.width, this.height);
-
     positionResizeHandlers.bind(this)(this.layers, selectedObject, selectionHandles);
   }
 }

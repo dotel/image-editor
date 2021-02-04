@@ -24,6 +24,10 @@ export default class Painter {
     this.ctx.beginPath();
   }
 
+  /**
+   * Draws on two canvases at once
+   * @param {MouseEvent} e Mouse move event
+   */
   draw(e) {
     if (this.isDrawing) {
       const x = e.clientX - this.canvas.getBoundingClientRect().left;
@@ -35,12 +39,12 @@ export default class Painter {
       );
       this.tempCtx.lineWidth = this.strokeSize;
       this.ctx.lineWidth = this.layers.ratioFixedSizeX(this.strokeSize);
-      this.drawOnGivenContext(this.tempCtx);
-      this.drawOnGivenContext(this.ctx);
+      this.prepareBrush(this.tempCtx);
+      this.prepareBrush(this.ctx);
     }
   }
 
-  drawOnGivenContext(ctx) {
+  prepareBrush(ctx) {
     ctx.strokeStyle = this.fillColor;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';

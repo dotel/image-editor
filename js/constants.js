@@ -4,7 +4,6 @@ const INTERVAL = 20;
 const RESIZING_BOX_COLOR = 'white';
 const RESIZING_BOX_SIZE = 10;
 
-
 // Keeps track of current selected tool
 const TOOLS = {
   DRAW: 1,
@@ -41,9 +40,8 @@ const DEFAULT_TEXT = {
   x: 100, y: 100,
 };
 
-
 export {
   INTERVAL, RESIZING_BOX_COLOR, TOOLS,
   DEFAULT_IMAGE, DEFAULT_RECTANGLE, DEFAULT_STICKER, DEFAULT_CIRCLE,
-  RESIZING_BOX_SIZE, DEFAULT_TEXT
+  RESIZING_BOX_SIZE, DEFAULT_TEXT,
 };

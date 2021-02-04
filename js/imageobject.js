@@ -1,5 +1,4 @@
 import { positionResizeHandlers } from './handleresizer.js';
-import { drawRotatedImage } from './utilities.js';
 /**
  * Creates a new instance of ImageObject
  * Height and width ratio are fixed in the constructor

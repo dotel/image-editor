@@ -77,9 +77,6 @@ function drawRotatedImage(ctx, image, x, y, width, height, deg) {
   ctx.restore();
 }
 
-
-
-
 export {
   clearContext,
   randomColor,
